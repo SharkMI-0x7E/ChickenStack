@@ -1,0 +1,1205 @@
+自定义主题
+解析主题
+可以通过创建一个 .vitepress/theme/index.js 或 .vitepress/theme/index.ts 文件 (即"主题入口文件") 来启用自定义主题：
+
+
+.├─ docs                # 项目根目录
+│  ├─ .vitepress
+│  │  ├─ theme
+│  │  │  └─ index.js   # 主题入口
+│  │  └─ config.js     # 配置文件
+│  └─ index.md
+└─ package.json
+当检测到存在主题入口文件时，VitePress 总会使用自定义主题而不是默认主题。但你可以扩展默认主题来在其基础上实现更高级的自定义。
+
+主题接口
+VitePress 自定义主题是一个对象，该对象具有如下接口：
+
+
+interface Theme {
+  /**
+   * 每个页面的根布局组件
+   * @required
+   */
+  Layout: Component
+  /**
+   * 增强 Vue 应用实例
+   * @optional
+   */
+  enhanceApp?: (ctx: EnhanceAppContext) => Awaitable<void>
+  /**
+   * 扩展另一个主题，在我们的主题之前调用它的 `enhanceApp`
+   * @optional
+   */
+  extends?: Theme
+}
+
+interface EnhanceAppContext {
+  app: App // Vue 应用实例
+  router: Router // VitePress 路由实例
+  siteData: Ref<SiteData> // 站点级元数据
+}
+主题入口文件需要将主题作为默认导出来导出：
+
+.vitepress/theme/index.js
+
+
+// 可以直接在主题入口导入 Vue 文件
+// VitePress 已预先配置 @vitejs/plugin-vue
+import Layout from './Layout.vue'
+
+export default {
+  Layout,
+  enhanceApp({ app, router, siteData }) {
+    // ...
+  }
+}
+默认导出是自定义主题的唯一方式，并且只有 Layout 属性是必须的。所以从技术上讲，一个 VitePress 主题可以是一个单独的 Vue 组件。
+
+在组件内部，它的工作方式就像是一个普通的 Vite + Vue 3 应用。请注意，主题还需要保证 SSR 兼容。
+
+构建布局
+最基本的布局组件需要包含一个 <Content /> 组件：
+
+.vitepress/theme/Layout.vue
+
+
+<template>
+  <h1>Custom Layout!</h1>
+
+  <!-- 此处将渲染 markdown 内容 -->
+  <Content />
+</template>
+上面的布局只是将每个页面的 markdown 渲染为 HTML。我们添加的第一个改进是处理 404 错误：
+
+
+<script setup>
+import { useData } from 'vitepress'
+const { page } = useData()
+</script>
+
+<template>
+  <h1>Custom Layout!</h1>
+
+  <div v-if="page.isNotFound">
+    Custom 404 page!
+  </div>
+  <Content v-else />
+</template>
+useData() 为我们提供了所有的运行时数据，以便我们根据不同条件渲染不同的布局。我们可以访问的另一个数据是当前页面的 frontmatter。通过利用这个数据，可以让用户单独控制每个页面的布局。例如，用户可以指定一个页面是否使用特殊的主页布局：
+
+
+---
+layout: home
+---
+并且我们可以调整主题进行处理：
+
+
+<script setup>
+import { useData } from 'vitepress'
+const { page, frontmatter } = useData()
+</script>
+
+<template>
+  <h1>Custom Layout!</h1>
+
+  <div v-if="page.isNotFound">
+    Custom 404 page!
+  </div>
+  <div v-if="frontmatter.layout === 'home'">
+    Custom home page!
+  </div>
+  <Content v-else />
+</template>
+当然你可以将布局切分为不同的组件：
+
+
+<script setup>
+import { useData } from 'vitepress'
+import NotFound from './NotFound.vue'
+import Home from './Home.vue'
+import Page from './Page.vue'
+
+const { page, frontmatter } = useData()
+</script>
+
+<template>
+  <h1>Custom Layout!</h1>
+
+  <NotFound v-if="page.isNotFound" />
+  <Home v-if="frontmatter.layout === 'home'" />
+  <Page v-else /> <!-- <Page /> renders <Content /> -->
+</template>
+请查看运行时 API 参考获取主题组件中所有可用内容。此外，可以利用构建时数据加载来生成数据驱动布局——例如，一个列出当前项目中所有博客文章的页面。
+
+分发自定义主题
+分发自定义主题最简单的方式是通过将其作为 GitHub 模版仓库。
+
+如果你希望将主题作为 npm 包来分发，请按照下面的步骤操作：
+
+在包入口将主题对象使用默认导出。
+
+如果合适的话，将主题配置类型定义作为 ThemeConfig 导出。
+
+如果主题需要调整 VitePress 配置，请在包的子路径下 (例如 my-theme/config) 下导出该配置，以便用户扩展。
+
+记录主题配置选项 (通过配置文件和 frontmatter)。
+
+提供清晰的说明，告诉用户如何使用主题 (见下文)。
+
+使用自定义主题
+要使用外部主题，请导入它并重新导出：
+
+.vitepress/theme/index.js
+
+
+import Theme from 'awesome-vitepress-theme'
+
+export default Theme
+如果主题需要扩展：
+
+.vitepress/theme/index.js
+
+
+import Theme from 'awesome-vitepress-theme'
+
+export default {
+  extends: Theme,
+  enhanceApp(ctx) {
+    // ...
+  }
+}
+如果主题需要特殊的 VitePress 配置，也需要在配置中扩展：
+
+.vitepress/config.ts
+
+
+import baseConfig from 'awesome-vitepress-theme/config'
+
+export default {
+  // 扩展主题的基本配置（如需要）
+  extends: baseConfig
+}
+最后，如果主题为其主题配置提供了类型：
+
+.vitepress/config.ts
+
+
+import baseConfig from 'awesome-vitepress-theme/config'
+import { defineConfigWithTheme } from 'vitepress'
+import type { ThemeConfig } from 'awesome-vitepress-theme'
+
+export default defineConfigWithTheme<ThemeConfig>({
+  extends: baseConfig,
+  themeConfig: {
+    // 类型为 `ThemeConfig`
+  }
+})
+扩展默认主题
+VitePress 默认的主题已经针对文档进行了优化，并且可以进行自定义。请参考默认主题配置概览获取完整的选项列表。
+
+但是有一些情况仅靠配置是不够的。例如：
+
+需要调整 CSS 样式；
+
+需要修改 Vue 应用实例，例如注册全局组件；
+
+需要通过 layout 插槽将自定义内容注入到主题中；
+
+这些高级自定义配置将需要使用自定义主题来"拓展"默认主题。
+
+TIP
+
+在继续之前，请确保首先阅读自定义主题以了解其工作原理。
+
+自定义 CSS
+可以通过覆盖根级别的 CSS 变量来自定义默认主题的 CSS：
+
+.vitepress/theme/index.js
+
+
+import DefaultTheme from 'vitepress/theme'
+import './custom.css'
+
+export default DefaultTheme
+
+/* .vitepress/theme/custom.css */
+:root {
+  --vp-c-brand-1: #646cff;
+  --vp-c-brand-2: #747bff;
+}
+查看默认主题 CSS 变量来获取可以被覆盖的变量。
+
+使用自定义字体
+VitePress 使用 Inter 作为默认字体，并且将其包含在生成的输出中。该字体在生产环境中也会自动预加载。但是如果要使用不同的字体，这可能不是很好。
+
+为了避免在生成后的输出中包含 Inter 字体，请从 vitepress/theme-without-fonts 中导入主题：
+
+.vitepress/theme/index.js
+
+
+import DefaultTheme from 'vitepress/theme-without-fonts'
+import './my-fonts.css'
+
+export default DefaultTheme
+
+/* .vitepress/theme/my-fonts.css */
+:root {
+  --vp-font-family-base: /* 普通文本字体 */
+  --vp-font-family-mono: /* 代码字体 */
+}
+WARNING
+
+如果你在使用像是团队页这样的组件，请确保也从 vitepress/theme-without-fonts 中导入它们！
+
+如果字体是通过 @font-face 引用的本地文件，它将会被作为资源被包含在 .vitepress/dist/asset 目录下，并且使用哈希后的文件名。为了预加载这个文件，请使用 transformHead 构建钩子：
+
+.vitepress/config.js
+
+
+export default {
+  transformHead({ assets }) {
+    // 相应地调整正则表达式以匹配字体
+    const myFontFile = assets.find(file => /font-name\.[\w-]+\.woff2/.test(file))
+    if (myFontFile) {
+      return [
+        [
+          'link',
+          {
+            rel: 'preload',
+            href: myFontFile,
+            as: 'font',
+            type: 'font/woff2',
+            crossorigin: ''
+          }
+        ]
+      ]
+    }
+  }
+}
+注册全局组件
+.vitepress/theme/index.js
+
+
+import DefaultTheme from 'vitepress/theme'
+
+/** @type {import('vitepress').Theme} */
+export default {
+  extends: DefaultTheme,
+  enhanceApp({ app }) {
+    // 注册自定义全局组件
+    app.component('MyGlobalComponent' /* ... */)
+  }
+}
+如果使用 TypeScript:
+
+.vitepress/theme/index.ts
+
+
+import type { Theme } from 'vitepress'
+import DefaultTheme from 'vitepress/theme'
+
+export default {
+  extends: DefaultTheme,
+  enhanceApp({ app }) {
+    // 注册自定义全局组件
+    app.component('MyGlobalComponent' /* ... */)
+  }
+} satisfies Theme
+因为我们使用 Vite，还可以利用 Vite 的 glob 导入功能来自动注册一个组件目录。
+
+布局插槽
+默认主题的 <Layout/> 组件有一些插槽，能够被用来在页面的特定位置注入内容。下面这个例子展示了将一个组件注入到 outline 之前：
+
+.vitepress/theme/index.js
+
+
+import DefaultTheme from 'vitepress/theme'
+import MyLayout from './MyLayout.vue'
+
+export default {
+  extends: DefaultTheme,
+  // 使用注入插槽的包装组件覆盖 Layout
+  Layout: MyLayout
+}
+.vitepress/theme/MyLayout.vue
+
+
+<script setup>
+import DefaultTheme from 'vitepress/theme'
+
+const { Layout } = DefaultTheme
+</script>
+
+<template>
+  <Layout>
+    <template #aside-outline-before>
+      My custom sidebar top content
+    </template>
+  </Layout>
+</template>
+也可以使用渲染函数。
+
+.vitepress/theme/index.js
+
+
+import { h } from 'vue'
+import DefaultTheme from 'vitepress/theme'
+import MyComponent from './MyComponent.vue'
+
+export default {
+  extends: DefaultTheme,
+  Layout() {
+    return h(DefaultTheme.Layout, null, {
+      'aside-outline-before': () => h(MyComponent)
+    })
+  }
+}
+默认主题布局的全部可用插槽如下：
+
+当 layout: 'doc' (默认) 在 frontmatter 中被启用时：
+doc-top
+doc-bottom
+doc-footer-before
+doc-before
+doc-after
+sidebar-nav-before
+sidebar-nav-after
+aside-top
+aside-bottom
+aside-outline-before
+aside-outline-after
+aside-ads-before
+aside-ads-after
+
+当 layout: 'home' 在 frontmatter 中被启用时:
+home-hero-before
+home-hero-info-before
+home-hero-info
+home-hero-info-after
+home-hero-actions-after
+home-hero-image
+home-hero-after
+home-features-before
+home-features-after
+
+当 layout: 'page' 在 frontmatter 中被启用时:
+page-top
+page-bottom
+
+当未找到页面 (404) 时:
+not-found
+
+总是启用:
+layout-top
+layout-bottom
+nav-bar-title-before
+nav-bar-title-after
+nav-bar-content-before
+nav-bar-content-after
+nav-screen-content-before
+nav-screen-content-after
+
+使用视图过渡 API
+关于外观切换
+可以扩展默认主题以在切换颜色模式时提供自定义过渡动画。例如：
+
+.vitepress/theme/Layout.vue
+
+
+<script setup lang="ts">
+import { useData } from 'vitepress'
+import DefaultTheme from 'vitepress/theme'
+import { nextTick, provide } from 'vue'
+
+const { isDark } = useData()
+
+const enableTransitions = () =>
+  'startViewTransition' in document &&
+  window.matchMedia('(prefers-reduced-motion: no-preference)').matches
+
+provide('toggle-appearance', async ({ clientX: x, clientY: y }: MouseEvent) => {
+  if (!enableTransitions()) {
+    isDark.value = !isDark.value
+    return
+  }
+
+  const clipPath = [
+    `circle(0px at ${x}px ${y}px)`,
+    `circle(${Math.hypot(
+      Math.max(x, innerWidth - x),
+      Math.max(y, innerHeight - y)
+    )}px at ${x}px ${y}px)`
+  ]
+
+  await document.startViewTransition(async () => {
+    isDark.value = !isDark.value
+    await nextTick()
+  }).ready
+
+  document.documentElement.animate(
+    { clipPath: isDark.value ? clipPath.reverse() : clipPath },
+    {
+      duration: 300,
+      easing: 'ease-in',
+      fill: 'forwards',
+      pseudoElement: `::view-transition-${isDark.value ? 'old' : 'new'}(root)`
+    }
+  )
+})
+</script>
+
+<template>
+  <DefaultTheme.Layout />
+</template>
+
+<style>
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root),
+.dark::view-transition-new(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root),
+.dark::view-transition-old(root) {
+  z-index: 9999;
+}
+
+.VPSwitchAppearance {
+  width: 22px !important;
+}
+
+.VPSwitchAppearance .check {
+  transform: none !important;
+}
+</style>
+结果（注意！：画面闪烁、快速闪现、强光刺激）:
+
+Demo
+
+有关视图过渡动画的更多详细信息，请参阅 Chrome 文档。
+
+路由切换时
+即将到来。
+
+重写内部组件
+可以使用 Vite 的 aliases 来用自定义组件替换默认主题的组件：
+
+
+import { fileURLToPath, URL } from 'node:url'
+import { defineConfig } from 'vitepress'
+
+export default defineConfig({
+  vite: {
+    resolve: {
+      alias: [
+        {
+          find: /^.*\/VPNavBar\.vue$/,
+          replacement: fileURLToPath(
+            new URL('./components/CustomNavBar.vue', import.meta.url)
+          )
+        }
+      ]
+    }
+  }
+})
+
+站点配置
+站点配置可以定义站点的全局设置。应用配置选项适用于每个 VitePress 站点，无论它使用什么主题。例如根目录或站点的标题。
+
+概览
+配置解析
+配置文件总是从 <root>/.vitepress/config.[ext] 解析，其中 <root> 是 VitePress 项目根目录，[ext] 是支持的文件扩展名之一。开箱即用地支持 TypeScript。支持的扩展名包括 .js、.ts、.mjs 和 .mts。
+
+建议在配置文件中使用 ES 模块语法。配置文件应该默认导出一个对象：
+
+
+export default {
+  // 应用级配置选项
+  lang: 'en-US',
+  title: 'VitePress',
+  description: 'Vite & Vue powered static site generator.',
+  ...
+}
+配置智能提示
+使用 defineConfig 辅助函数将为配置选项提供 TypeScript 支持的智能提示。假设 IDE 支持它，那么在 JavaScript 和 TypeScript 中都将触发智能提示。
+
+
+import { defineConfig } from 'vitepress'
+
+export default defineConfig({
+  // ...
+})
+主题类型提示
+默认情况下，defineConfig 辅助函数期望默认主题的主题配置数据类型为：
+
+
+import { defineConfig } from 'vitepress'
+
+export default defineConfig({
+  themeConfig: {
+    // 类型为 `DefaultTheme.Config`
+  }
+})
+如果使用自定义主题并希望对主题配置进行类型检查，则需要改用 defineConfigWithTheme，并通过通用参数传递自定义主题的配置类型：
+
+
+import { defineConfigWithTheme } from 'vitepress'
+import type { ThemeConfig } from 'your-theme'
+
+export default defineConfigWithTheme<ThemeConfig>({
+  themeConfig: {
+    // 类型为 `ThemeConfig`
+  }
+})
+Vite、Vue 和 Markdown 配置
+Vite
+
+可以使用 VitePress 配置中的 vite 选项配置底层 Vite 实例。无需创建单独的 Vite 配置文件。
+
+Vue
+
+VitePress 已经包含 Vite 的官方 Vue 插件 ( @vitejs/plugin-vue)，所以我们可以配置 VitePress 中的 vue 选项。
+
+Markdown
+
+可以使用 VitePress 配置中的 markdown 选项配置底层的 Markdown-It 实例。
+
+站点元数据
+title
+类型：string
+默认值： VitePress
+每个页面可以通过 frontmatter 覆盖
+站点的标题。使用默认主题时，这将显示在导航栏中。
+
+它还将用作所有单独页面标题的默认后缀，除非定义了 titleTemplate。单个页面的最终标题将是其第一个 <h1> 标题的文本内容加上的全局 title。例如使用以下配置和页面内容：
+
+
+export default {
+  title: 'My Awesome Site'
+}
+
+# Hello
+页面标题就是 Hello | My Awesome Site.
+
+titleTemplate
+类型：string | boolean
+每个页面可以通过 frontmatter 覆盖
+允许自定义每个页面的标题后缀或整个标题。例如：
+
+
+export default {
+  title: 'My Awesome Site',
+  titleTemplate: 'Custom Suffix'
+}
+
+# Hello
+页面标题就是 Hello | Custom Suffix.
+
+要完全自定义标题的呈现方式，可以在 titleTemplate 中使用 :title 标识符：
+
+
+export default {
+  titleTemplate: ':title - Custom Suffix'
+}
+这里的 :title 将替换为从页面的第一个 <h1> 标题推断出的文本。上一个示例页面的标题将是 Hello - Custom Suffix。
+
+该选项可以设置为 false 以禁用标题后缀。
+
+description
+类型：string
+默认值： A VitePress site
+每个页面可以通过 frontmatter 覆盖
+站点的描述。这将呈现为页面 HTML 中的 <meta> 标签。
+
+
+export default {
+  description: 'A VitePress site'
+}
+head
+类型：HeadConfig[]
+默认值： []
+可以通过 frontmatter 为每个页面追加
+要在页面 HTML 的 <head> 标签中呈现的其他元素。用户添加的标签在结束 head 标签之前呈现，在 VitePress 标签之后。
+
+
+type HeadConfig =
+  | [string, Record<string, string>]
+  | [string, Record<string, string>, string]
+示例：添加一个图标
+
+
+export default {
+  head: [['link', { rel: 'icon', href: '/favicon.ico' }]]
+} // 将 favicon.ico 放在公共目录中，如果设置了 base，则使用 /base/favicon.ico
+
+/* 渲染成:
+  <link rel="icon" href="/favicon.ico">
+*/
+示例：添加谷歌字体
+
+
+export default {
+  head: [
+    [
+      'link',
+      { rel: 'preconnect', href: 'https://fonts.googleapis.com' }
+    ],
+    [
+      'link',
+      { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' }
+    ],
+    [
+      'link',
+      { href: 'https://fonts.googleapis.com/css2?family=Roboto&display=swap', rel: 'stylesheet' }
+    ]
+  ]
+}
+
+/* 渲染成:
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+*/
+示例：添加一个 serviceWorker
+
+
+export default {
+  head: [
+    [
+      'script',
+      { id: 'register-sw' },
+      `;(() => {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/sw.js')
+        }
+      })()`
+    ]
+  ]
+}
+
+/* 渲染成:
+  <script id="register-sw">
+    ;(() => {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+      }
+    })()
+  </script>
+*/
+示例：使用谷歌分析
+
+
+export default {
+  head: [
+    [
+      'script',
+      { async: '', src: 'https://www.googletagmanager.com/gtag/js?id=TAG_ID' }
+    ],
+    [
+      'script',
+      {},
+      `window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'TAG_ID');`
+    ]
+  ]
+}
+
+/* 渲染成:
+  <script async src="https://www.googletagmanager.com/gtag/js?id=TAG_ID"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'TAG_ID');
+  </script>
+*/
+lang
+类型：string
+默认值： en-US
+站点的 lang 属性。这将呈现为页面 HTML 中的 <html lang="en-US"> 标签。
+
+
+export default {
+  lang: 'en-US'
+}
+base
+类型：string
+默认值： /
+站点将部署到的 base URL。如果计划在子路径例如 GitHub 页面下部署站点，则需要设置此项。如果计划将站点部署到 https://foo.github.io/bar/，那么应该将 base 设置为 '/bar/'。它应该始终以 / 开头和结尾。
+
+base 会自动添加到其他选项中以 / 开头的所有 URL 前面，因此只需指定一次。
+
+
+export default {
+  base: '/base/'
+}
+路由
+cleanUrls
+类型：boolean
+默认值： false
+当设置为 true 时，VitePress 将从 URL 中删除 .html 后缀。另请参阅生成简洁的 URL。
+
+需要服务器支持
+
+要启用此功能，可能需要在托管平台上进行额外配置。要使其正常工作，服务器必须能够在不重定向的情况下访问 /foo 时提供 /foo.html。
+
+rewrites
+类型：Record<string, string>
+自定义目录 <-> URL 映射。详细信息请参阅路由：路由重写。
+
+
+export default {
+  rewrites: {
+    'source/:page': 'destination/:page'
+  }
+}
+构建
+srcDir
+类型：string
+默认值： .
+相对于项目根目录的 markdown 文件所在的文件夹。另请参阅根目录和源目录。
+
+
+export default {
+  srcDir: './src'
+}
+srcExclude
+类型：string
+默认值： undefined
+用于匹配应排除作为源内容输出的 markdown 文件，语法详见 glob pattern。
+
+
+export default {
+  srcExclude: ['**/README.md', '**/TODO.md']
+}
+outDir
+类型：string
+默认值： ./.vitepress/dist
+项目的构建输出位置，相对于项目根目录。
+
+
+export default {
+  outDir: '../public'
+}
+assetsDir
+类型：string
+默认值： assets
+指定放置生成的静态资源的目录。该路径应位于 outDir 内，并相对于它进行解析。
+
+
+export default {
+  assetsDir: 'static'
+}
+cacheDir
+类型：string
+默认值： ./.vitepress/cache
+缓存文件的目录，相对于项目根目录。另请参阅：cacheDir。
+
+
+export default {
+  cacheDir: './.vitepress/.vite'
+}
+ignoreDeadLinks
+类型：boolean | 'localhostLinks' | (string | RegExp | ((link: string, source: string) => boolean))[]
+默认值： false
+当设置为 true 时，VitePress 不会因为死链而导致构建失败。
+
+当设置为 'localhostLinks' ，出现死链时构建将失败，但不会检查 localhost 链接。
+
+
+export default {
+  ignoreDeadLinks: true
+}
+它也可以是一组精确的 url 字符串、正则表达式模式或自定义过滤函数。
+
+
+export default {
+  ignoreDeadLinks: [
+    // 忽略精确网址 "/playground"
+    '/playground',
+    // 忽略所有 localhost 链接
+    /^https?:\/\/localhost/,
+    // 忽略所有包含 "/repl/" 的链接
+    /\/repl\//,
+    // 自定义函数，忽略所有包含 "ignore "的链接
+    (url) => {
+      return url.toLowerCase().includes('ignore')
+    }
+  ]
+}
+metaChunk experimental
+类型：boolean
+默认值：false
+当设置为 true 时，将页面元数据提取到单独的 JavaScript 块中，而不是内联在初始 HTML 中。这使每个页面的 HTML 负载更小，并使页面元数据可缓存，从而当站点中有很多页面时可以减少服务器带宽。
+
+mpa experimental
+类型：boolean
+默认值： false
+设置为 true 时，生产应用程序将在 MPA 模式下构建。MPA 模式默认提供 零 JavaScript 支持，代价是禁用客户端导航，并且需要明确选择加入才能进行交互。
+
+主题
+appearance
+类型：boolean | 'dark' | 'force-dark' | import(' @vueuse/core').UseDarkOptions
+默认值： true
+是否启用深色模式 (通过将 .dark 类添加到 <html> 元素)。
+
+如果该选项设置为 true，则默认主题将由用户的首选配色方案决定。
+如果该选项设置为 dark，则默认情况下主题将是深色的，除非用户手动切换它。
+如果该选项设置为 false，用户将无法切换主题。
+此选项注入一个内联脚本，使用 vitepress-theme-appearance key 从本地存储恢复用户设置。这确保在呈现页面之前应用 .dark 类以避免闪烁。
+
+appearance.initialValue 只能是 'dark' | undefined。 不支持 Refs 或 getters。
+
+lastUpdated
+类型：boolean
+默认值： false
+是否使用 Git 获取每个页面的最后更新时间戳。时间戳将包含在每个页面的页面数据中，可通过 useData 访问。
+
+使用默认主题时，启用此选项将显示每个页面的最后更新时间。可以通过 themeConfig.lastUpdatedText 选项自定义文本。
+
+自定义
+markdown
+类型：MarkdownOption
+配置 Markdown 解析器选项。VitePress 使用 Markdown-it 作为解析器，使用 Shiki 来高亮不同语言语法。在此选项中，可以传递各种 Markdown 相关选项以满足你的需要。
+
+
+export default {
+  markdown: {...}
+}
+查看类型声明和 jsdocs 以获得所有可配置的选项。
+
+vite
+类型：import('vite').UserConfig
+将原始 Vite 配置传递给内部 Vite 开发服务器 / bundler。
+
+
+export default {
+  vite: {
+    // Vite 配置选项
+  }
+}
+vue
+类型：import( @vitejs/plugin-vue).Options
+将原始的 @vitejs/plugin-vue 选项传递给内部插件实例。
+
+
+export default {
+  vue: {
+    // @vitejs/plugin-vue 选项
+  }
+}
+构建钩子
+VitePress 构建钩子允许向站点添加新功能和行为：
+
+Sitemap
+Search Indexing
+PWA
+Teleport
+buildEnd
+类型：(siteConfig: SiteConfig) => Awaitable<void>
+buildEnd 是一个构建 CLI 钩子，它将在构建 SSG 完成后但在 VitePress CLI 进程退出之前运行。
+
+
+export default {
+  async buildEnd(siteConfig) {
+    // ...
+  }
+}
+postRender
+类型：(context: SSGContext) => Awaitable<SSGContext | void>
+postRender 是一个构建钩子，在 SSG 渲染完成时调用。它将允许在 SSG 期间处理传递的内容。
+
+
+export default {
+  async postRender(context) {
+    // ...
+  }
+}
+
+interface SSGContext {
+  content: string
+  teleports?: Record<string, string>
+  [key: string]: any
+}
+transformHead
+类型：(context: TransformContext) => Awaitable<HeadConfig[]>
+transformHead 是一个构建钩子，用于在生成每个页面之前转换 head。它将允许添加无法静态添加到 VitePress 配置中的 head entries。只需要返回额外的 entries，它们将自动与现有 entries 合并。
+
+WARNING
+
+不要改变 context 中的任何东西。
+
+
+export default {
+  async transformHead(context) {
+    // ...
+  }
+}
+
+interface TransformContext {
+  page: string // 例如 index.md (相对于 srcDir)
+  assets: string[] // 所有非 js/css 资源均作为完全解析的公共 URL
+  siteConfig: SiteConfig
+  siteData: SiteData
+  pageData: PageData
+  title: string
+  description: string
+  head: HeadConfig[]
+  content: string
+}
+请注意，仅在静态生成站点时才会调用此钩子。在开发期间不会调用它。如果需要在开发期间添加动态 head 条目，可以使用 transformPageData 钩子来替代：
+
+
+export default {
+  transformPageData(pageData) {
+    pageData.frontmatter.head ??= []
+    pageData.frontmatter.head.push([
+      'meta',
+      {
+        name: 'og:title',
+        content:
+          pageData.frontmatter.layout === 'home'
+            ? `VitePress`
+            : `${pageData.title} | VitePress`
+      }
+    ])
+  }
+}
+示例：添加 canonical URL <link>
+
+
+export default {
+  transformPageData(pageData) {
+    const canonicalUrl = `https://example.com/${pageData.relativePath}`
+      .replace(/index\.md$/, '')
+      .replace(/\.md$/, '.html')
+
+    pageData.frontmatter.head ??= []
+    pageData.frontmatter.head.push([
+      'link',
+      { rel: 'canonical', href: canonicalUrl }
+    ])
+  }
+}
+transformHtml
+类型：(code: string, id: string, context: TransformContext) => Awaitable<string | void>
+transformHtml 是一个构建钩子，用于在保存到磁盘之前转换每个页面的内容。
+
+WARNING
+
+不要改变 context 中的任何东西。另外，修改 html 内容可能会导致运行时出现激活问题。
+
+
+export default {
+  async transformHtml(code, id, context) {
+    // ...
+  }
+}
+transformPageData
+类型：(pageData: PageData, context: TransformPageContext) => Awaitable<Partial<PageData> | { [key: string]: any } | void>
+transformPageData 是一个钩子，用于转换每个页面的 pageData。可以直接改变 pageData 或返回将合并到 PageData 中的更改值。
+
+WARNING
+
+不要改变 context 中的任何东西。请注意，这可能会影响开发服务器的性能，特别是当在钩子中有一些网络请求或大量计算 (例如生成图像) 时。可以通过判断 process.env.NODE_ENV === 'production' 匹配符合条件的情况。
+
+
+export default {
+  async transformPageData(pageData, { siteConfig }) {
+    pageData.contributors = await getPageContributors(pageData.relativePath)
+  }
+
+  // 或返回要合并的数据
+  async transformPageData(pageData, { siteConfig }) {
+    return {
+      contributors: await getPageContributors(pageData.relativePath)
+    }
+  }
+}
+
+interface TransformPageContext {
+  siteConfig: SiteConfig
+}
+
+主页
+VitePress 默认主题提供了一个首页布局，也可以在此站点首页看到。可以通过 frontmatter 指定 layout: home 在任何页面上使用它
+
+
+---
+layout: home
+---
+但是，仅做这个配置不会有太大作用。可以通过设置其他选项 (例如 hero 和 features) 向主页添加几个不同的预设。
+
+Hero 部分
+Hero 部分位于主页顶部。以下是配置 Hero 的方法。
+
+
+---
+layout: home
+
+hero:
+  name: VitePress
+  text: Vite & Vue powered static site generator.
+  tagline: Lorem ipsum...
+  image:
+    src: /logo.png
+    alt: VitePress
+  actions:
+    - theme: brand
+      text: Get Started
+      link: /guide/what-is-vitepress
+    - theme: alt
+      text: View on GitHub
+      link: https://github.com/vuejs/vitepress
+---
+
+interface Hero {
+  // `text` 上方的字符，带有品牌颜色
+  // 预计简短，例如产品名称
+  name?: string
+
+  // hero 部分的主要文字，
+  // 被定义为 `h1` 标签
+  text: string
+
+  // `text` 下方的标语
+  tagline?: string
+
+  // text 和 tagline 区域旁的图片
+  image?: ThemeableImage
+
+  // 主页 hero 部分的操作按钮
+  actions?: HeroAction[]
+}
+
+type ThemeableImage =
+  | string
+  | { src: string; alt?: string }
+  | { light: string; dark: string; alt?: string }
+
+interface HeroAction {
+  // 按钮的颜色主题，默认为 `brand`
+  theme?: 'brand' | 'alt'
+
+  // 按钮的标签
+  text: string
+
+  // 按钮的目标链接
+  link: string
+
+  // 链接的 target 属性
+  target?: string
+
+  // 链接的 rel 属性
+  rel?: string
+}
+自定义 name 的颜色
+VitePress 通过 (--vp-c-brand-1) 设置 name 的颜色。但是，可以通过覆盖 --vp-home-hero-name-color 变量来自定义此颜色。
+
+
+:root {
+  --vp-home-hero-name-color: blue;
+}
+也可以通过组合 --vp-home-hero-name-background 来进一步自定义 name 为渐变色。
+
+
+:root {
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: -webkit-linear-gradient(120deg, #bd34fe, #41d1ff);
+}
+Features 部分
+在 Features 部分，可以在 Hero 部分之后列出任意数量的 Feature。可以在 frontmatter 中配置 features。
+
+可以为每个 feature 提供一个图标，可以是表情符号或任何类型的图像。当配置的图标是图片（svg, png, jpeg...）时，必须提供合适的宽度和高度的图标；还可以在需要时配置其描述、固有大小以及深色和浅色主题下的不同表现。
+
+
+---
+layout: home
+
+features:
+  - icon: 🛠️
+    title: Simple and minimal, always
+    details: Lorem ipsum...
+  - icon:
+      src: /cool-feature-icon.svg
+    title: Another cool feature
+    details: Lorem ipsum...
+  - icon:
+      dark: /dark-feature-icon.svg
+      light: /light-feature-icon.svg
+    title: Another cool feature
+    details: Lorem ipsum...
+---
+
+interface Feature {
+  // 在每个 feature 框中显示图标
+  icon?: FeatureIcon
+
+  // feature 的标题
+  title: string
+
+  // feature 的详情
+  details: string
+
+  // 点击 feature 组件时的链接，可以是内部链接，也可以是外部链接。
+  //
+  //
+  // 例如 `guide/reference/default-theme-home-page` 或 `https://example.com`
+  link?: string
+
+  // feature 组件内显示的链接文本，最好与 `link` 选项一起使用
+  //
+  //
+  // 例如 `Learn more`, `Visit page` 等
+  linkText?: string
+
+  // `link` 选项的链接 rel 属性
+  //
+  // 例如 `external`
+  rel?: string
+
+  // `link` 选项的链接 target 属性
+  target?: string
+}
+
+type FeatureIcon =
+  | string
+  | { src: string; alt?: string; width?: string; height: string }
+  | {
+      light: string
+      dark: string
+      alt?: string
+      width?: string
+      height?: string
+    }
+Markdown 内容
+可以在 frontmatter 的分隔符 --- 下方为站点主页添加额外的 Markdown 内容。
+
+
+---
+layout: home
+
+hero:
+  name: VitePress
+  text: Vite & Vue powered static site generator.
+---
+
+## Getting Started
+
+You can get started using VitePress right away using `npx`!
+
+```sh
+npm init
+npx vitepress init
+```
+INFO
+
+VitePress 并不总是为 layout: home 页面里额外的内容自动添加样式。要回到以前的行为，可以在 frontmatter 中添加 markdownStyles: false。
