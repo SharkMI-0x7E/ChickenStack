@@ -132,17 +132,10 @@ Hello World
 
 ## Link
 
-| Docs | [![Documentation](https://img.shields.io/badge/docs-on-Github.IO-orange)](https://llz162652.github.io/ChickenStack_doc/) |
-|:-:|:-:|
-
-| Repository | [![GitHub](https://img.shields.io/badge/repo-on-Github-black)](https://github.com/llz162652/ChickenStack) |
-|:-:|:-:|
-
-| Examples | [![Examples](https://img.shields.io/badge/examples-on-Github-blue)](https://github.com/llz162652/ChickenStack/tree/main/examples) |
-|:-:|:-:|
-
-| Tests | [![Tests](https://img.shields.io/badge/tests-on-Github-green)](https://github.com/llz162652/ChickenStack/tree/main/tests) |
-|:-:|:-:|
+- **📚 Docs**: [完整文档](https://llz162652.github.io/ChickenStack_doc/)
+- **🔧 Repository**: [GitHub 主仓库](https://github.com/llz162652/ChickenStack)
+- **💡 Examples**: [示例代码](https://github.com/llz162652/ChickenStack/tree/main/examples)
+- **🧪 Tests**: [测试用例](https://github.com/llz162652/ChickenStack/tree/main/tests)
 
 ## Thanks
 

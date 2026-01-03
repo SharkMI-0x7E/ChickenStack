@@ -39,6 +39,7 @@ desktop.ini
 maibotdoc/
 NO上传VitePress/
 doc/
+docs/
 
 # 测试覆盖率
 .coverage
