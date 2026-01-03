@@ -53,8 +53,8 @@ import os
 import time
 from typing import List, Dict, Tuple, Optional, Callable
 
-# 添加当前目录到路径，确保能导入 main 模块
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# 添加项目根目录到路径，确保能导入 main 模块
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from main import ChickenStackInterpreter
 

@@ -130,6 +130,23 @@ class Token:
     """
     # 强制使用 __slots__ 减少内存占用，避免 __dict__ 开销
     __slots__ = ('type', 'value', 'line', 'column')
+    
+    # 类级别的常量集合（使用 frozenset 避免被修改）
+    _OPERATOR_TYPES = frozenset({
+        TokenType.PLUS, TokenType.MINUS, TokenType.MULTIPLY,
+        TokenType.DIVIDE, TokenType.MODULO
+    })
+    
+    _STACK_OP_TYPES = frozenset({TokenType.DUP, TokenType.SWAP, TokenType.DROP})
+    
+    _LOGIC_OP_TYPES = frozenset({TokenType.EQ, TokenType.GT})
+    
+    _IO_OP_TYPES = frozenset({
+        TokenType.PRINT_NUM, TokenType.PRINT_CHAR,
+        TokenType.INPUT_NUM, TokenType.INPUT_CHAR
+    })
+    
+    _LOOP_TYPES = frozenset({TokenType.LOOP_START, TokenType.LOOP_END})
 
     def __init__(self, type: TokenType, value: Optional[int] = None, line: int = 0, column: int = 0) -> None:
         """
@@ -158,29 +175,23 @@ class Token:
 
     def is_operator(self) -> bool:
         """判断是否为操作符 Token"""
-        return self.type in {
-            TokenType.PLUS, TokenType.MINUS, TokenType.MULTIPLY,
-            TokenType.DIVIDE, TokenType.MODULO
-        }
+        return self.type in self._OPERATOR_TYPES
 
     def is_stack_op(self) -> bool:
         """判断是否为栈操作 Token"""
-        return self.type in {TokenType.DUP, TokenType.SWAP, TokenType.DROP}
+        return self.type in self._STACK_OP_TYPES
 
     def is_logic_op(self) -> bool:
         """判断是否为逻辑操作 Token"""
-        return self.type in {TokenType.EQ, TokenType.GT}
+        return self.type in self._LOGIC_OP_TYPES
 
     def is_io_op(self) -> bool:
         """判断是否为 I/O 操作 Token"""
-        return self.type in {
-            TokenType.PRINT_NUM, TokenType.PRINT_CHAR,
-            TokenType.INPUT_NUM, TokenType.INPUT_CHAR
-        }
+        return self.type in self._IO_OP_TYPES
 
     def is_loop(self) -> bool:
         """判断是否为循环控制 Token"""
-        return self.type in {TokenType.LOOP_START, TokenType.LOOP_END}
+        return self.type in self._LOOP_TYPES
 
 class Parser:
     """
@@ -206,6 +217,28 @@ class Parser:
 
     # 最大循环嵌套深度，防止栈溢出
     MAX_LOOP_DEPTH = 100
+    
+    # 类级别的常量
+    _WHITESPACE = frozenset({' ', '\t', '\r'})
+    
+    _CHAR_TO_TOKEN = {
+        '+': TokenType.PLUS,
+        '-': TokenType.MINUS,
+        '*': TokenType.MULTIPLY,
+        '/': TokenType.DIVIDE,
+        '%': TokenType.MODULO,
+        ':': TokenType.DUP,
+        '\\': TokenType.SWAP,
+        '$': TokenType.DROP,
+        '=': TokenType.EQ,
+        '>': TokenType.GT,
+        '.': TokenType.PRINT_NUM,
+        '"': TokenType.PRINT_CHAR,
+        ',': TokenType.INPUT_NUM,
+        '?': TokenType.INPUT_CHAR,
+        '[': TokenType.LOOP_START,
+        ']': TokenType.LOOP_END,
+    }
 
     def __init__(self) -> None:
         """
@@ -251,34 +284,19 @@ class Parser:
             - 使用列表收集字符，避免字符串拼接，提升性能
         """
         tokens = []
-        num_chars = []  # 使用列表收集数字字符，避免字符串拼接
+        num_str = ''  # 使用字符串直接拼接，对小数字性能更好
         in_comment = False  # 标记是否在注释中
         line = 1  # 当前行号
         column = 0  # 当前列号
 
-        # 字符到 Token 类型的映射
-        char_to_token = {
-            '+': TokenType.PLUS,
-            '-': TokenType.MINUS,
-            '*': TokenType.MULTIPLY,
-            '/': TokenType.DIVIDE,
-            '%': TokenType.MODULO,
-            ':': TokenType.DUP,
-            '\\': TokenType.SWAP,
-            '$': TokenType.DROP,
-            '=': TokenType.EQ,
-            '>': TokenType.GT,
-            '.': TokenType.PRINT_NUM,
-            '"': TokenType.PRINT_CHAR,
-            ',': TokenType.INPUT_NUM,
-            '?': TokenType.INPUT_CHAR,
-            '[': TokenType.LOOP_START,
-            ']': TokenType.LOOP_END,
-        }
-
         # ========================================
         # 第一阶段：词法分析 (Tokenization)
         # ========================================
+
+        # 缓存方法引用到局部变量，减少属性查找开销
+        tokens_append = tokens.append
+        token_integer = Token
+        token_integer = Token
 
         # 遍历源代码的每个字符
         for char in source_code:
@@ -303,26 +321,26 @@ class Parser:
 
             # 处理数字字符
             if char.isdigit():
-                # 收集数字字符到列表
-                num_chars.append(char)
+                # 收集数字字符到字符串
+                num_str += char
             else:
                 # 非数字字符，处理累积的数字
-                if num_chars:
-                    # 使用 join 一次性构建字符串，避免多次拼接
-                    value = int(''.join(num_chars))
-                    start_column = column - len(num_chars)
-                    tokens.append(Token(TokenType.INTEGER, value, line, start_column))
-                    num_chars.clear()  # 清空列表
+                if num_str:
+                    value = int(num_str)
+                    start_column = column - len(num_str)
+                    tokens_append(token_integer(TokenType.INTEGER, value, line, start_column))
+                    num_str = ''  # 清空字符串
 
-                if char.strip():
+                if char not in self._WHITESPACE:
                     # 如果字符不是空白字符，创建对应的 Token
-                    if char in char_to_token:
-                        tokens.append(Token(char_to_token[char], line=line, column=column))
+                    token_type = self._CHAR_TO_TOKEN.get(char)
+                    if token_type:
+                        tokens_append(token_integer(token_type, line=line, column=column))
 
         # 处理源代码末尾的数字（如果有的话）
-        if num_chars:
-            start_column = column - len(num_chars) + 1
-            tokens.append(Token(TokenType.INTEGER, int(''.join(num_chars)), line, start_column))
+        if num_str:
+            start_column = column - len(num_str) + 1
+            tokens.append(Token(TokenType.INTEGER, int(num_str), line, start_column))
 
         # ========================================
         # 第二阶段：构建循环跳转表
@@ -363,19 +381,24 @@ class Parser:
             raise TypeError(f"tokens 必须是列表: {type(tokens)}")
 
         stack = []  # 用于匹配循环符号的栈
+        loops = self.loops  # 缓存属性引用
+        max_loop_depth = self.MAX_LOOP_DEPTH  # 缓存常量
+        loop_start = TokenType.LOOP_START  # 缓存枚举值
+        loop_end = TokenType.LOOP_END  # 缓存枚举值
 
         # 遍历所有 Token，查找循环符号
         for i, token in enumerate(tokens):
-            if token.type == TokenType.LOOP_START:
+            token_type = token.type  # 缓存属性访问
+            if token_type == loop_start:
                 # 遇到循环开始符号：将位置索引入栈
                 # 检查循环嵌套深度
-                if len(stack) >= self.MAX_LOOP_DEPTH:
+                if len(stack) >= max_loop_depth:
                     raise SyntaxError(
                         f"循环嵌套过深（行 {token.line}, 列 {token.column}），"
-                        f"最大深度为 {self.MAX_LOOP_DEPTH}"
+                        f"最大深度为 {max_loop_depth}"
                     )
                 stack.append(i)
-            elif token.type == TokenType.LOOP_END:
+            elif token_type == loop_end:
                 # 遇到循环结束符号
                 if not stack:
                     # 栈为空，说明没有匹配的 [
@@ -387,17 +410,11 @@ class Parser:
                 # 弹出栈顶位置（最近的 [ 的位置）
                 start = stack.pop()
 
-                # 验证索引为非负数
-                if start < 0 or i < 0:
-                    raise ValueError(
-                        f"循环跳转索引不能为负数: {start} -> {i}"
-                    )
-
                 # 建立双向映射关系
                 # start -> end: 从 [ 跳转到 ]
                 # end -> start: 从 ] 跳回 [
-                self.loops[start] = i
-                self.loops[i] = start
+                loops[start] = i
+                loops[i] = start
 
         # 检查是否有未闭合的 [
         if stack:

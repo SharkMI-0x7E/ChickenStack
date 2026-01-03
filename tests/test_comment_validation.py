@@ -7,10 +7,40 @@
 import sys
 import os
 
-# 添加当前目录到路径
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# 添加项目根目录到路径
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from main import ChickenStackInterpreter
+
+
+def extract_token_values(tokens):
+    """从 Token 列表中提取值，用于简化比较"""
+    values = []
+    for token in tokens:
+        if token.type.name == 'INTEGER':
+            values.append(token.value)
+        else:
+            # 对于操作符，使用符号表示
+            token_symbols = {
+                'PLUS': '+',
+                'MINUS': '-',
+                'MULTIPLY': '*',
+                'DIVIDE': '/',
+                'MODULO': '%',
+                'DUP': ':',
+                'SWAP': '\\',
+                'DROP': '$',
+                'EQ': '=',
+                'GT': '>',
+                'PRINT_NUM': '.',
+                'PRINT_CHAR': '"',
+                'INPUT_NUM': ',',
+                'INPUT_CHAR': '?',
+                'LOOP_START': '[',
+                'LOOP_END': ']',
+            }
+            values.append(token_symbols.get(token.type.name, token.type.name))
+    return values
 
 
 def test_basic_comment():
@@ -20,10 +50,11 @@ def test_basic_comment():
     interpreter = ChickenStackInterpreter()
     tokens = interpreter.parser.parse(source)
     expected = [5, 3, '+', '.']
+    actual = extract_token_values(tokens)
     print(f"  源代码: {repr(source)}")
     print(f"  期望Token: {expected}")
-    print(f"  实际Token: {tokens}")
-    assert tokens == expected, f"测试失败: 期望 {expected}, 得到 {tokens}"
+    print(f"  实际Token: {actual}")
+    assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
     print("  ✓ 通过\n")
 
 
@@ -34,10 +65,11 @@ def test_line_start_comment():
     interpreter = ChickenStackInterpreter()
     tokens = interpreter.parser.parse(source)
     expected = [5, 3, '+', '.']
+    actual = extract_token_values(tokens)
     print(f"  源代码: {repr(source)}")
     print(f"  期望Token: {expected}")
-    print(f"  实际Token: {tokens}")
-    assert tokens == expected, f"测试失败: 期望 {expected}, 得到 {tokens}"
+    print(f"  实际Token: {actual}")
+    assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
     print("  ✓ 通过\n")
 
 
@@ -52,10 +84,11 @@ def test_multiline_comments():
     interpreter = ChickenStackInterpreter()
     tokens = interpreter.parser.parse(source)
     expected = [5, 3, '+', '.']
+    actual = extract_token_values(tokens)
     print(f"  源代码: {repr(source)}")
     print(f"  期望Token: {expected}")
-    print(f"  实际Token: {tokens}")
-    assert tokens == expected, f"测试失败: 期望 {expected}, 得到 {tokens}"
+    print(f"  实际Token: {actual}")
+    assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
     print("  ✓ 通过\n")
 
 
@@ -66,10 +99,11 @@ def test_comment_in_middle():
     interpreter = ChickenStackInterpreter()
     tokens = interpreter.parser.parse(source)
     expected = [5, 3, '+', '.', 5, 3, '+', '.']
+    actual = extract_token_values(tokens)
     print(f"  源代码: {repr(source)}")
     print(f"  期望Token: {expected}")
-    print(f"  实际Token: {tokens}")
-    assert tokens == expected, f"测试失败: 期望 {expected}, 得到 {tokens}"
+    print(f"  实际Token: {actual}")
+    assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
     print("  ✓ 通过\n")
 
 
@@ -80,10 +114,11 @@ def test_empty_comment_line():
     interpreter = ChickenStackInterpreter()
     tokens = interpreter.parser.parse(source)
     expected = [5, 3, '+', '.']
+    actual = extract_token_values(tokens)
     print(f"  源代码: {repr(source)}")
     print(f"  期望Token: {expected}")
-    print(f"  实际Token: {tokens}")
-    assert tokens == expected, f"测试失败: 期望 {expected}, 得到 {tokens}"
+    print(f"  实际Token: {actual}")
+    assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
     print("  ✓ 通过\n")
 
 
@@ -94,10 +129,11 @@ def test_comment_at_end_no_newline():
     interpreter = ChickenStackInterpreter()
     tokens = interpreter.parser.parse(source)
     expected = [5, 3, '+', '.']
+    actual = extract_token_values(tokens)
     print(f"  源代码: {repr(source)}")
     print(f"  期望Token: {expected}")
-    print(f"  实际Token: {tokens}")
-    assert tokens == expected, f"测试失败: 期望 {expected}, 得到 {tokens}"
+    print(f"  实际Token: {actual}")
+    assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
     print("  ✓ 通过\n")
 
 
@@ -111,10 +147,11 @@ def test_consecutive_comments():
     interpreter = ChickenStackInterpreter()
     tokens = interpreter.parser.parse(source)
     expected = [5, 3, '+', '.']
+    actual = extract_token_values(tokens)
     print(f"  源代码: {repr(source)}")
     print(f"  期望Token: {expected}")
-    print(f"  实际Token: {tokens}")
-    assert tokens == expected, f"测试失败: 期望 {expected}, 得到 {tokens}"
+    print(f"  实际Token: {actual}")
+    assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
     print("  ✓ 通过\n")
 
 
@@ -125,10 +162,11 @@ def test_comment_with_spaces():
     interpreter = ChickenStackInterpreter()
     tokens = interpreter.parser.parse(source)
     expected = [5, 3, '+', '.']
+    actual = extract_token_values(tokens)
     print(f"  源代码: {repr(source)}")
     print(f"  期望Token: {expected}")
-    print(f"  实际Token: {tokens}")
-    assert tokens == expected, f"测试失败: 期望 {expected}, 得到 {tokens}"
+    print(f"  实际Token: {actual}")
+    assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
     print("  ✓ 通过\n")
 
 
@@ -139,10 +177,11 @@ def test_comment_after_newline():
     interpreter = ChickenStackInterpreter()
     tokens = interpreter.parser.parse(source)
     expected = [5, 3, '+', '.']
+    actual = extract_token_values(tokens)
     print(f"  源代码: {repr(source)}")
     print(f"  期望Token: {expected}")
-    print(f"  实际Token: {tokens}")
-    assert tokens == expected, f"测试失败: 期望 {expected}, 得到 {tokens}"
+    print(f"  实际Token: {actual}")
+    assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
     print("  ✓ 通过\n")
 
 
@@ -161,10 +200,11 @@ def test_complex_scenario():
     interpreter = ChickenStackInterpreter()
     tokens = interpreter.parser.parse(source)
     expected = [5, 3, '+', '.', 10, 2, '-', '.']
+    actual = extract_token_values(tokens)
     print(f"  源代码: {repr(source)}")
     print(f"  期望Token: {expected}")
-    print(f"  实际Token: {tokens}")
-    assert tokens == expected, f"测试失败: 期望 {expected}, 得到 {tokens}"
+    print(f"  实际Token: {actual}")
+    assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
     print("  ✓ 通过\n")
 
 
