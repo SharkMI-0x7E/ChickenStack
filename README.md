@@ -8,9 +8,7 @@ _A Turing Complete Stack-Based Programming Language_
 
 ---
 
-**Read this in other languages: [English](README.md), [中文](README_zh.md).**
-
----
+**Read this in other languages: [English](./README.md), [中文]./(README_zh.md).**
 
 ![Python Version](https://img.shields.io/badge/Python-3.8+-blue)
 ![License](https://img.shields.io/github/license/llz162652/ChickenStack?label=License)
