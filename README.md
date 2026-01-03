@@ -1,57 +1,96 @@
-﻿# ChickenStack
+<div align="center">
 
-基于栈的图灵完备编程语言
+# ChickenStack
 
-ChickenStack 是一个简单、优雅、强大的基于栈的编程语言，采用逆波兰表达式（RPN）语法。它比 Brainfuck 更人类友好，易于理解和调试，同时保持图灵完备性，可以计算任何可计算的函数。
+_基于栈的图灵完备编程语言_
 
-## 特性
+> 栈之深兮不可测，代码之美兮在简洁.
 
-- 🐔 **基于栈** - 采用逆波兰表达式，所有操作都在栈上进行，逻辑清晰
-- 🚀 **图灵完备** - 支持数学运算、循环、逻辑判断等，可以计算任何可计算的函数
-- 🎯 **简单易学** - 使用直观的符号，比 Brainfuck 更人类友好，易于理解和调试
-- 🌐 **跨平台** - 支持 Windows、Linux、macOS 等主流操作系统
-- 📦 **Python API** - 可以轻松嵌入到 Python 项目中，提供完整的 API 接口
-- 🔧 **可扩展** - 支持自定义指令和 IO Handler，满足各种需求
+</div>
 
-## 快速开始
+---
+
+## Welcome
+
+- ChickenStack 是一个简单、优雅、强大的基于栈的编程语言，采用逆波兰表达式（RPN）语法。
+  - ChickenStack is a simple, elegant, and powerful stack-based programming language using Reverse Polish Notation (RPN) syntax.
+
+## Feature
+
+- **Easy to Use**
+  - 作为初学者能够轻松使用，比 Brainfuck 更人类友好
+- **Turing Complete**
+  - 支持数学运算、循环、逻辑判断等，可以计算任何可计算的函数
+- **Cross Platform**
+  - 支持 Windows、Linux、macOS 等主流操作系统
+- **Rich API**
+  - 提供 Python API，可以轻松嵌入到 Python 项目中
+- **Extensible**
+  - 支持自定义指令和 IO Handler，满足各种需求
+- **Stable and Reliable**
+  - 持续稳定的开发与维护
+
+## Quick Start
 
 ### 安装
 
 ```bash
-git clone https://github.com/yourusername/ChickenStack.git
+git clone https://github.com/llz162652/ChickenStack.git
 cd ChickenStack
+pip install -r requirements.txt
 ```
 
 ### Hello World
+
+创建 `hello_world.ch` 文件：
 
 ```ch
 72 " 101 " 108 " 108 " 111 " 32 " 87 " 111 " 114 " 108 " 100 " 10 "
 ```
 
-### 运行
+运行：
 
 ```bash
 python main.py hello_world.ch
 ```
 
-## 文档
+输出：
 
-详细文档请查看项目中的 `doc/` 目录，或运行以下命令启动本地文档服务器：
-
-```bash
-cd doc
-npm install
-npm run dev
+```
+Hello World
 ```
 
-在线文档即将上线...
+### 更多示例
 
-## 许可证
+查看 `examples/` 目录获取更多示例代码。
 
-MIT License
+**首次使用**请务必查看[完整文档](https://llz162652.github.io/ChickenStack_doc/)
+
+## Link
+
+| Docs | [![Documentation](https://img.shields.io/badge/docs-on-Github.IO-orange)](https://llz162652.github.io/ChickenStack_doc/) |
+|:-:|:-:|
+
+| Repository | [![GitHub](https://img.shields.io/badge/repo-on-Github-black)](https://github.com/llz162652/ChickenStack) |
+|:-:|:-:|
+
+| Examples | [![Examples](https://img.shields.io/badge/examples-on-Github-blue)](https://github.com/llz162652/ChickenStack/tree/main/examples) |
+|:-:|:-:|
+
+## Thanks
+
+- [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) 灵感来源，展示了极简编程语言的魅力
+
+- [VitePress](https://vitepress.dev/) 提供了优秀的文档构建工具
+
+- [MaiBot](https://github.com/MaiM-with-u/MaiBot) 文档设计灵感来源
+
+- 不过最最重要的，还是需要感谢屏幕前的你使用 ChickenStack~
 
 ---
 
-**特别感谢：**
-- 本项目文档系统使用 [VitePress](https://vitepress.dev/) 构建
-- Powered by AI GLM-4.7
+## License
+
+本项目采用 [MIT License](./LICENSE) 开源。
+
+**本仓库仅用于学习和研究目的，使用请遵守当地法律法规，由此造成的问题由使用者负责。**
