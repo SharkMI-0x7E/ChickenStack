@@ -1,6 +1,6 @@
 # Release Notes
 
-## v1.1.0 - Performance & Documentation Update (2026-01-03)
+## v0.1.1 Alpha - Performance & Documentation Update (2026-01-03)
 
 ### 🚀 Performance Improvements
 
