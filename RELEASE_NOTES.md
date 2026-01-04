@@ -143,7 +143,7 @@ None
 
 ---
 
-## v1.0.0 - Initial Release
+## v0.1.0 Alpha - Initial Release
 
 - Basic instruction set implementation
 - Python API wrapper
