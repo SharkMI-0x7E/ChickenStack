@@ -191,6 +191,12 @@ Contributions are welcome! Please check [CONTRIBUTING.md](https://llz162652.gith
 
 ### Contributors
 
+**AI Developer**
+- AI GLM-4.7 - Code generation, testing, documentation, performance optimization
+
+**Human Developer**
+- llz162652 - Project planning, code review, requirement definition
+
 Thanks to all the contributors!
 
 <a href="https://github.com/llz162652/ChickenStack/graphs/contributors">

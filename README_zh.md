@@ -191,6 +191,12 @@ graph TD
 
 ### 贡献者
 
+**AI 开发者**
+- AI GLM-4.7 - 代码生成、测试、文档编写、性能优化
+
+**人类开发者**
+- llz162652 - 项目规划、代码审查、需求定义
+
 感谢各位大佬！
 
 <a href="https://github.com/llz162652/ChickenStack/graphs/contributors">
