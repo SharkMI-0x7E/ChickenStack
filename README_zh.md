@@ -10,8 +10,6 @@ _基于栈的图灵完备编程语言_
 
 **其他语言版本: [English](README.md), [中文](README_zh.md).**
 
----
-
 ![Python Version](https://img.shields.io/badge/Python-3.8+-blue)
 ![License](https://img.shields.io/github/license/llz162652/ChickenStack?label=协议)
 ![Status](https://img.shields.io/badge/状态-活跃开发-green)
