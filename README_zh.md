@@ -142,27 +142,30 @@ Hello World
 
 ## 🏗️ 架构
 
-```
-┌─────────────────────────────────────────┐
-│         ChickenStack 源代码 (.ch)         │
-└─────────────┬───────────────────────────┘
-              │
-              ▼
-┌─────────────────────────────────────────┐
-│           Parser (解析器)                │
-│   词法分析 → 语法分析 → Token 生成       │
-└─────────────┬───────────────────────────┘
-              │
-              ▼
-┌─────────────────────────────────────────┐
-│         Virtual Machine (虚拟机)         │
-│   栈管理 → 指令执行 → IO 处理            │
-└─────────────┬───────────────────────────┘
-              │
-              ▼
-┌─────────────────────────────────────────┐
-│         Output (输出结果)                │
-└─────────────────────────────────────────┘
+```mermaid
+graph TD
+    A[ChickenStack 源码<br/>.ch 文件] --> B[Parser 解析器]
+    B --> C[Virtual Machine 虚拟机]
+    C --> D[Output 输出结果]
+    
+    B --> B1[词法分析]
+    B1 --> B2[语法分析]
+    B2 --> B3[Token 生成]
+    
+    C --> C1[栈管理]
+    C1 --> C2[指令执行]
+    C2 --> C3[IO 处理]
+    
+    style A fill:#e1f5ff
+    style B fill:#fff4e6
+    style C fill:#f3e5f5
+    style D fill:#e8f5e9
+    style B1 fill:#ffebee
+    style B2 fill:#ffebee
+    style B3 fill:#ffebee
+    style C1 fill:#e3f2fd
+    style C2 fill:#e3f2fd
+    style C3 fill:#e3f2fd
 ```
 
 ## 🗺️ 路线图
