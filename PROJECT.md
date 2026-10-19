@@ -20,11 +20,11 @@
 - **语言 / 版本**：Python（实际运行 3.12；源码用 3.9+ 语法如 `list[Token]`；`requirements.txt` 声明 `>=3.7`，待核实修正）
 - **主要依赖**：无运行时依赖（标准库）；开发依赖 `pytest>=7` / `black>=23` / `flake8>=6`
 - **数据存储**：无（无持久化；测试产物写入 `tests/results/*.json`）
-- **外部服务**：文档站（VitePress + GitHub Pages）源码在独立仓库 `ChickenStack_doc`（本仓库同级目录），部署于 https://llz162652.github.io/ChickenStack_doc/
+- **外部服务**：文档站（VitePress + GitHub Pages）源码在独立仓库 `ChickenStack_doc`（本仓库同级目录），部署于 https://SharkMI-0x7E.github.io/ChickenStack_doc/
 
 ## 版本控制
 - **类型**：git
-- **远程**：有；`origin` https://github.com/llz162652/ChickenStack.git ；`doc` https://github.com/llz162652/ChickenStack_doc.git
+- **远程**：有；`origin` https://github.com/SharkMI-0x7E/ChickenStack.git ；`doc` https://github.com/SharkMI-0x7E/ChickenStack_doc.git
 - **主分支**：main
 
 ## 边界

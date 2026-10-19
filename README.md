@@ -11,12 +11,12 @@ _A Turing Complete Stack-Based Programming Language_
 **Read this in other languages: [English](./README.md), [中文](./README_zh.md).**
 
 ![Python Version](https://img.shields.io/badge/Python-3.9+-blue)
-![License](https://img.shields.io/github/license/llz162652/ChickenStack?label=License)
+![License](https://img.shields.io/github/license/SharkMI-0x7E/ChickenStack?label=License)
 ![Status](https://img.shields.io/badge/Status-Active-green)
-![Contributors](https://img.shields.io/github/contributors/llz162652/ChickenStack.svg?style=flat&label=Contributors)
-![forks](https://img.shields.io/github/forks/llz162652/ChickenStack.svg?style=flat&label=Forks)
-![stars](https://img.shields.io/github/stars/llz162652/ChickenStack?style=flat&label=Stars)
-![issues](https://img.shields.io/github/issues/llz162652/ChickenStack)
+![Contributors](https://img.shields.io/github/contributors/SharkMI-0x7E/ChickenStack.svg?style=flat&label=Contributors)
+![forks](https://img.shields.io/github/forks/SharkMI-0x7E/ChickenStack.svg?style=flat&label=Forks)
+![stars](https://img.shields.io/github/stars/SharkMI-0x7E/ChickenStack?style=flat&label=Stars)
+![issues](https://img.shields.io/github/issues/SharkMI-0x7E/ChickenStack)
 
 <div style="text-align: center">
 <strong>
@@ -48,7 +48,7 @@ _A Turing Complete Stack-Based Programming Language_
 ### Installation
 
 ```bash
-git clone https://github.com/llz162652/ChickenStack.git
+git clone https://github.com/SharkMI-0x7E/ChickenStack.git
 cd ChickenStack
 pip install -r requirements.txt
 ```
@@ -113,13 +113,13 @@ Because this "chicken" (Chicken) will "peck" (Peck) data on the stack, just as s
 
 ## 📚 Documentation
 
-**For first-time users**, please check the [complete documentation](https://llz162652.github.io/ChickenStack_doc/)
+**For first-time users**, please check the [complete documentation](https://SharkMI-0x7E.github.io/ChickenStack_doc/)
 
-- [Quick Start](https://llz162652.github.io/ChickenStack_doc/guide/installation.html)
-- [Instruction Set](https://llz162652.github.io/ChickenStack_doc/guide/instruction-set.html)
-- [Syntax](https://llz162652.github.io/ChickenStack_doc/guide/syntax.html)
-- [Python API](https://llz162652.github.io/ChickenStack_doc/guide/python-api.html)
-- [VM API](https://llz162652.github.io/ChickenStack_doc/guide/vm-api.html)
+- [Quick Start](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/installation.html)
+- [Instruction Set](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/instruction-set.html)
+- [Syntax](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/syntax.html)
+- [Python API](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/python-api.html)
+- [VM API](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/vm-api.html)
 
 > 🤖 **For AI collaborators (including AI coding assistants):** this repo ships an
 > [`AGENTS.md`](./AGENTS.md) entry point, plus [`PROJECT.md`](./PROJECT.md) (project facts)
@@ -130,17 +130,17 @@ Because this "chicken" (Chicken) will "peck" (Peck) data on the stack, just as s
 Check the `examples/` directory for more example code, including:
 
 ### Basic Examples
-- [Hello World](https://llz162652.github.io/ChickenStack_doc/examples/hello-world.html)
-- [Math Operations](https://llz162652.github.io/ChickenStack_doc/examples/math.html)
-- [Stack Operations](https://llz162652.github.io/ChickenStack_doc/examples/stack.html)
+- [Hello World](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/hello-world.html)
+- [Math Operations](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/math.html)
+- [Stack Operations](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/stack.html)
 
 ### Advanced Examples
-- [Loops](https://llz162652.github.io/ChickenStack_doc/examples/loops.html)
-- [Fibonacci Sequence](https://llz162652.github.io/ChickenStack_doc/examples/fibonacci.html)
-- [Factorial](https://llz162652.github.io/ChickenStack_doc/examples/factorial.html)
-- [String Reverse](https://llz162652.github.io/ChickenStack_doc/examples/reverse-string.html)
-- [Sum](https://llz162652.github.io/ChickenStack_doc/examples/sum.html)
-- [Multiplication Table](https://llz162652.github.io/ChickenStack_doc/examples/multiplication-table.html)
+- [Loops](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/loops.html)
+- [Fibonacci Sequence](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/fibonacci.html)
+- [Factorial](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/factorial.html)
+- [String Reverse](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/reverse-string.html)
+- [Sum](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/sum.html)
+- [Multiplication Table](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/multiplication-table.html)
 
 ## 🏗️ Architecture
 
@@ -184,14 +184,14 @@ graph TD
 
 ## 🔗 Links
 
-- **📚 Documentation**: [Full Documentation](https://llz162652.github.io/ChickenStack_doc/)
-- **🔧 Repository**: [GitHub Repository](https://github.com/llz162652/ChickenStack)
-- **💡 Examples**: [Example Code](https://github.com/llz162652/ChickenStack/tree/main/examples)
-- **🧪 Tests**: [Test Cases](https://github.com/llz162652/ChickenStack/tree/main/tests)
+- **📚 Documentation**: [Full Documentation](https://SharkMI-0x7E.github.io/ChickenStack_doc/)
+- **🔧 Repository**: [GitHub Repository](https://github.com/SharkMI-0x7E/ChickenStack)
+- **💡 Examples**: [Example Code](https://github.com/SharkMI-0x7E/ChickenStack/tree/main/examples)
+- **🧪 Tests**: [Test Cases](https://github.com/SharkMI-0x7E/ChickenStack/tree/main/tests)
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please check [CONTRIBUTING.md](https://llz162652.github.io/ChickenStack_doc/) to learn how to participate in development.
+Contributions are welcome! Please check [CONTRIBUTING.md](https://SharkMI-0x7E.github.io/ChickenStack_doc/) to learn how to participate in development.
 
 ### Contributors
 
@@ -199,12 +199,12 @@ Contributions are welcome! Please check [CONTRIBUTING.md](https://llz162652.gith
 - AI GLM-4.7 - Code generation, testing, documentation, performance optimization
 
 **Human Developer**
-- llz162652 - Project planning, code review, requirement definition
+- SharkMI-0x7E - Project planning, code review, requirement definition
 
 Thanks to all the contributors!
 
-<a href="https://github.com/llz162652/ChickenStack/graphs/contributors">
-  <img alt="contributors" src="https://contrib.rocks/image?repo=llz162652/ChickenStack" />
+<a href="https://github.com/SharkMI-0x7E/ChickenStack/graphs/contributors">
+  <img alt="contributors" src="https://contrib.rocks/image?repo=SharkMI-0x7E/ChickenStack" />
 </a>
 
 ## 🙏 Acknowledgments
@@ -227,7 +227,7 @@ Thanks to all the contributors!
 
 ### Star History
 
-[![Star History](https://starchart.cc/llz162652/ChickenStack.svg?variant=adaptive)](https://starchart.cc/llz162652/ChickenStack)
+[![Star History](https://starchart.cc/SharkMI-0x7E/ChickenStack.svg?variant=adaptive)](https://starchart.cc/SharkMI-0x7E/ChickenStack)
 
 ## 📄 License
 
@@ -237,7 +237,7 @@ This project is open sourced under [MIT License](./LICENSE).
 
 <div align="center">
 
-**Made with ❤️ by llz162652**
+**Made with ❤️ by SharkMI-0x7E**
 
 **If you find it useful, please give a ⭐ Star to support us!**
 

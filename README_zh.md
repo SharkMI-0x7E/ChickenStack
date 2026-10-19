@@ -11,12 +11,12 @@ _基于栈的图灵完备编程语言_
 **其他语言版本: [English](README.md), [中文](README_zh.md).**
 
 ![Python Version](https://img.shields.io/badge/Python-3.9+-blue)
-![License](https://img.shields.io/github/license/llz162652/ChickenStack?label=协议)
+![License](https://img.shields.io/github/license/SharkMI-0x7E/ChickenStack?label=协议)
 ![Status](https://img.shields.io/badge/状态-活跃开发-green)
-![Contributors](https://img.shields.io/github/contributors/llz162652/ChickenStack.svg?style=flat&label=贡献者)
-![forks](https://img.shields.io/github/forks/llz162652/ChickenStack.svg?style=flat&label=分支数)
-![stars](https://img.shields.io/github/stars/llz162652/ChickenStack?style=flat&label=星标数)
-![issues](https://img.shields.io/github/issues/llz162652/ChickenStack)
+![Contributors](https://img.shields.io/github/contributors/SharkMI-0x7E/ChickenStack.svg?style=flat&label=贡献者)
+![forks](https://img.shields.io/github/forks/SharkMI-0x7E/ChickenStack.svg?style=flat&label=分支数)
+![stars](https://img.shields.io/github/stars/SharkMI-0x7E/ChickenStack?style=flat&label=星标数)
+![issues](https://img.shields.io/github/issues/SharkMI-0x7E/ChickenStack)
 
 <div style="text-align: center">
 <strong>
@@ -48,7 +48,7 @@ _基于栈的图灵完备编程语言_
 ### 安装
 
 ```bash
-git clone https://github.com/llz162652/ChickenStack.git
+git clone https://github.com/SharkMI-0x7E/ChickenStack.git
 cd ChickenStack
 pip install -r requirements.txt
 ```
@@ -113,13 +113,13 @@ Hello World
 
 ## 📚 文档
 
-**首次使用**请务必查看[完整文档](https://llz162652.github.io/ChickenStack_doc/)
+**首次使用**请务必查看[完整文档](https://SharkMI-0x7E.github.io/ChickenStack_doc/)
 
-- [快速开始](https://llz162652.github.io/ChickenStack_doc/guide/installation.html)
-- [指令集](https://llz162652.github.io/ChickenStack_doc/guide/instruction-set.html)
-- [语法说明](https://llz162652.github.io/ChickenStack_doc/guide/syntax.html)
-- [Python API](https://llz162652.github.io/ChickenStack_doc/guide/python-api.html)
-- [虚拟机 API](https://llz162652.github.io/ChickenStack_doc/guide/vm-api.html)
+- [快速开始](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/installation.html)
+- [指令集](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/instruction-set.html)
+- [语法说明](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/syntax.html)
+- [Python API](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/python-api.html)
+- [虚拟机 API](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/vm-api.html)
 
 > 🤖 **面向 AI 协作者（含各类 AI 编程助手）：** 本仓库附带 [`AGENTS.md`](./AGENTS.md) 协作入口，
 > 以及 [`PROJECT.md`](./PROJECT.md)（项目事实）与 [`CLAUDE.md`](./CLAUDE.md)（AI 行为准则）。改动前请先读这三个文件。
@@ -129,17 +129,17 @@ Hello World
 查看 `examples/` 目录获取更多示例代码，包括：
 
 ### 基础示例
-- [Hello World](https://llz162652.github.io/ChickenStack_doc/examples/hello-world.html)
-- [数学运算](https://llz162652.github.io/ChickenStack_doc/examples/math.html)
-- [栈操作](https://llz162652.github.io/ChickenStack_doc/examples/stack.html)
+- [Hello World](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/hello-world.html)
+- [数学运算](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/math.html)
+- [栈操作](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/stack.html)
 
 ### 进阶示例
-- [循环](https://llz162652.github.io/ChickenStack_doc/examples/loops.html)
-- [斐波那契数列](https://llz162652.github.io/ChickenStack_doc/examples/fibonacci.html)
-- [阶乘](https://llz162652.github.io/ChickenStack_doc/examples/factorial.html)
-- [字符串反转](https://llz162652.github.io/ChickenStack_doc/examples/reverse-string.html)
-- [求和](https://llz162652.github.io/ChickenStack_doc/examples/sum.html)
-- [乘法表](https://llz162652.github.io/ChickenStack_doc/examples/multiplication-table.html)
+- [循环](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/loops.html)
+- [斐波那契数列](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/fibonacci.html)
+- [阶乘](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/factorial.html)
+- [字符串反转](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/reverse-string.html)
+- [求和](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/sum.html)
+- [乘法表](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/multiplication-table.html)
 
 ## 🏗️ 架构
 
@@ -183,14 +183,14 @@ graph TD
 
 ## 🔗 链接
 
-- **📚 文档**: [完整文档](https://llz162652.github.io/ChickenStack_doc/)
-- **🔧 仓库**: [GitHub 主仓库](https://github.com/llz162652/ChickenStack)
-- **💡 示例**: [示例代码](https://github.com/llz162652/ChickenStack/tree/main/examples)
-- **🧪 测试**: [测试用例](https://github.com/llz162652/ChickenStack/tree/main/tests)
+- **📚 文档**: [完整文档](https://SharkMI-0x7E.github.io/ChickenStack_doc/)
+- **🔧 仓库**: [GitHub 主仓库](https://github.com/SharkMI-0x7E/ChickenStack)
+- **💡 示例**: [示例代码](https://github.com/SharkMI-0x7E/ChickenStack/tree/main/examples)
+- **🧪 测试**: [测试用例](https://github.com/SharkMI-0x7E/ChickenStack/tree/main/tests)
 
 ## 🤝 贡献
 
-欢迎贡献代码！请查看 [CONTRIBUTING.md](https://llz162652.github.io/ChickenStack_doc/) 了解如何参与开发。
+欢迎贡献代码！请查看 [CONTRIBUTING.md](https://SharkMI-0x7E.github.io/ChickenStack_doc/) 了解如何参与开发。
 
 ### 贡献者
 
@@ -198,12 +198,12 @@ graph TD
 - AI GLM-4.7 - 代码生成、测试、文档编写、性能优化
 
 **人类开发者**
-- llz162652 - 项目规划、代码审查、需求定义
+- SharkMI-0x7E - 项目规划、代码审查、需求定义
 
 感谢各位大佬！
 
-<a href="https://github.com/llz162652/ChickenStack/graphs/contributors">
-  <img alt="contributors" src="https://contrib.rocks/image?repo=llz162652/ChickenStack" />
+<a href="https://github.com/SharkMI-0x7E/ChickenStack/graphs/contributors">
+  <img alt="contributors" src="https://contrib.rocks/image?repo=SharkMI-0x7E/ChickenStack" />
 </a>
 
 ## 🙏 致谢
@@ -226,7 +226,7 @@ graph TD
 
 ### Star 趋势
 
-[![Star 趋势](https://starchart.cc/llz162652/ChickenStack.svg?variant=adaptive)](https://starchart.cc/llz162652/ChickenStack)
+[![Star 趋势](https://starchart.cc/SharkMI-0x7E/ChickenStack.svg?variant=adaptive)](https://starchart.cc/SharkMI-0x7E/ChickenStack)
 
 ## 📄 许可证
 
@@ -236,7 +236,7 @@ graph TD
 
 <div align="center">
 
-**Made with ❤️ by llz162652**
+**Made with ❤️ by SharkMI-0x7E**
 
 **如果觉得有用，请给个 ⭐ Star 支持一下！**
 

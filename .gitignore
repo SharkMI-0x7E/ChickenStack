@@ -63,3 +63,6 @@ doc/.vitepress/dist/
 
 # 遗留文件归档（year-old 调试脚本 / 历史上下文 txt：本地保留，不提交）
 archive/
+
+# 测试输出产物（benchmark / 优化结果等，运行生成，不提交）
+tests/results/
