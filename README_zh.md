@@ -2,48 +2,40 @@
 
 # ChickenStack
 
-_基于栈的图灵完备编程语言_
+_基于栈的图灵完备编程语言（RPN 语法）_
 
-> 栈之深兮不可测，代码之美兮在简洁.
-
----
+![Python](https://img.shields.io/badge/Python-3.9+-blue)
+![License](https://img.shields.io/github/license/SharkMI-0x7E/ChickenStack?label=License)
 
 **其他语言版本: [English](README.md), [中文](README_zh.md).**
 
-![Python Version](https://img.shields.io/badge/Python-3.9+-blue)
-![License](https://img.shields.io/github/license/SharkMI-0x7E/ChickenStack?label=协议)
-![Status](https://img.shields.io/badge/状态-活跃开发-green)
-![Contributors](https://img.shields.io/github/contributors/SharkMI-0x7E/ChickenStack.svg?style=flat&label=贡献者)
-![forks](https://img.shields.io/github/forks/SharkMI-0x7E/ChickenStack.svg?style=flat&label=分支数)
-![stars](https://img.shields.io/github/stars/SharkMI-0x7E/ChickenStack?style=flat&label=星标数)
-![issues](https://img.shields.io/github/issues/SharkMI-0x7E/ChickenStack)
-
-<div style="text-align: center">
-<strong>
-<a href="#-快速开始">🚀 快速开始</a> |
-<a href="#-特性">✨ 特性</a> |
-<a href="#-文档">📚 文档</a> |
-<a href="#-示例">💡 示例</a> |
-<a href="#-贡献">🤝 贡献</a>
-</strong>
 </div>
 
-</div>
+> **纯属娱乐。**
+>
+> ChickenStack 是觉得好玩、顺手 vibe coding 出来的，最初开发大概在 2025 年 12 月到 2026 年 1 月之间（首个提交于 2026 年 1 月）。此后基本没再继续开发，也没有长期维护计划，不保证持续更新。
+> 代码、文档、测试基本都由 AI 编写；人类维护者（SharkMI-0x7E）只提出了需求与方向，没做规划、审查或定义。
+>
+> 它图灵完备、能跑，适合拿来学栈式语言和编译原理，但别把它当正经工具——就是做着玩的。
 
 ---
 
-## 🎉 介绍
+## 简介
 
-**🐔 ChickenStack 是一个简单、优雅、强大的基于栈的编程语言**
+ChickenStack 是一门简单、优雅、基于栈的编程语言，使用逆波兰表示法（RPN）语法。它受 Brainfuck 启发，但比 Brainfuck 更人类友好：仅有少量基础指令，却图灵完备，适合学习栈数据结构、编译原理与编程语言设计。（名字来源：这只"鸡"会"啄"栈上的数据，就像啄米一样简单自然。）
 
-- 💭 **极简主义**：只有 8 个基础指令，每个指令都有明确的语义
-- 💭 **栈式思维**：所有操作都在栈上进行，符合函数式编程思想
-- 🧠 **教育价值**：适合学习栈数据结构、编译原理和编程语言设计
-- 🤔 **图灵完备**：支持数学运算、循环、逻辑判断等，可以计算任何可计算的函数
-- 🔌 **Python API**：提供 Python API，可以轻松嵌入到 Python 项目中
-- 💝 **跨平台**：支持 Windows、Linux、macOS 等主流操作系统
+- 极简主义：少量基础指令，每个指令语义明确
+- 栈式思维：所有操作都在栈上进行
+- 图灵完备：支持数学运算、循环、逻辑判断，可计算任何可计算函数
+- Python API：提供 Python API，可嵌入 Python 项目
+- 跨平台：纯 Python 实现，支持 Windows、Linux、macOS
+- 可扩展：支持自定义指令与 IO Handler
 
-## 🔥 快速开始
+## 工作原理
+
+执行流程：源码（`.ch`）→ Parser（词法分析、语法分析，生成 Token）→ 虚拟机（栈管理、指令执行、IO 处理）→ 输出结果。纯 Python 实现，无需编译，即插即用。
+
+## 快速开始
 
 ### 安装
 
@@ -55,7 +47,7 @@ pip install -r requirements.txt
 
 ### Hello World
 
-创建 `hello_world.ch` 文件：
+创建 `hello_world.ch`：
 
 ```ch
 72 " 101 " 108 " 108 " 111 " 32 " 87 " 111 " 114 " 108 " 100 " 10 "
@@ -79,41 +71,9 @@ Hello World
 0 1 10 [ dup + swap dup 1 - swap 1 - ]
 ```
 
-## ✨ 特性
+## 文档
 
-### 为什么叫 ChickenStack？
-
-因为这只"鸡"（Chicken）会"啄"（Peck）栈上的数据，就像啄米一样简单自然！
-
-### 核心特性
-
-- **易用性**
-  - 作为初学者能够轻松使用，比 Brainfuck 更人类友好
-  - 语法直观，学习曲线平缓
-
-- **图灵完备**
-  - 支持数学运算、循环、逻辑判断等
-  - 理论上可以编写任何程序
-
-- **跨平台**
-  - 支持 Windows、Linux、macOS 等主流操作系统
-  - 纯 Python 实现，无需编译，即插即用
-
-- **丰富的 API**
-  - 提供 Python API，可以轻松嵌入到 Python 项目中
-  - 支持自定义 IO Handler，扩展性强
-
-- **可扩展性**
-  - 支持自定义指令和 IO Handler，满足各种需求
-  - 可以轻松集成到现有项目
-
-- **稳定可靠**
-  - 持续稳定的开发与维护
-  - 完善的测试覆盖，保证代码质量
-
-## 📚 文档
-
-**首次使用**请务必查看[完整文档](https://SharkMI-0x7E.github.io/ChickenStack_doc/)
+首次使用请查看[完整文档](https://SharkMI-0x7E.github.io/ChickenStack_doc/)：
 
 - [快速开始](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/installation.html)
 - [指令集](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/instruction-set.html)
@@ -121,19 +81,15 @@ Hello World
 - [Python API](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/python-api.html)
 - [虚拟机 API](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/vm-api.html)
 
-> 🤖 **面向 AI 协作者（含各类 AI 编程助手）：** 本仓库附带 [`AGENTS.md`](./AGENTS.md) 协作入口，
-> 以及 [`PROJECT.md`](./PROJECT.md)（项目事实）与 [`CLAUDE.md`](./CLAUDE.md)（AI 行为准则）。改动前请先读这三个文件。
+> 面向 AI 协作者（含各类 AI 编程助手）：本仓库附带 [`AGENTS.md`](./AGENTS.md) 协作入口，以及 [`PROJECT.md`](./PROJECT.md)（项目事实）与 [`CLAUDE.md`](./CLAUDE.md)（AI 行为准则）。改动前请先读这三个文件。
 
-## 💡 示例
+## 示例
 
-查看 `examples/` 目录获取更多示例代码，包括：
+查看 `examples/` 目录获取更多示例代码：
 
-### 基础示例
 - [Hello World](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/hello-world.html)
 - [数学运算](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/math.html)
 - [栈操作](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/stack.html)
-
-### 进阶示例
 - [循环](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/loops.html)
 - [斐波那契数列](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/fibonacci.html)
 - [阶乘](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/factorial.html)
@@ -141,103 +97,35 @@ Hello World
 - [求和](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/sum.html)
 - [乘法表](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/multiplication-table.html)
 
-## 🏗️ 架构
+## 贡献
 
-```mermaid
-graph TD
-    A[ChickenStack 源码<br/>.ch 文件] --> B[Parser 解析器]
-    B --> C[Virtual Machine 虚拟机]
-    C --> D[Output 输出结果]
-    
-    B --> B1[词法分析]
-    B1 --> B2[语法分析]
-    B2 --> B3[Token 生成]
-    
-    C --> C1[栈管理]
-    C1 --> C2[指令执行]
-    C2 --> C3[IO 处理]
-    
-    style A fill:#e1f5ff
-    style B fill:#fff4e6
-    style C fill:#f3e5f5
-    style D fill:#e8f5e9
-    style B1 fill:#ffebee
-    style B2 fill:#ffebee
-    style B3 fill:#ffebee
-    style C1 fill:#e3f2fd
-    style C2 fill:#e3f2fd
-    style C3 fill:#e3f2fd
-```
+欢迎提交 Bug 报告与 Pull Request。
 
-## 🗺️ 路线图
+### 开发者与致谢
 
-- [x] 基础指令集实现
-- [x] Python API 封装
-- [x] 完整文档系统
-- [x] 性能优化（38.63% 提升）
-- [ ] JIT 编译优化
-- [ ] Web 版解释器
-- [ ] 更多语言绑定（JavaScript、Go）
-- [ ] IDE 插件支持
-- [ ] 在线代码编辑器
-
-## 🔗 链接
-
-- **📚 文档**: [完整文档](https://SharkMI-0x7E.github.io/ChickenStack_doc/)
-- **🔧 仓库**: [GitHub 主仓库](https://github.com/SharkMI-0x7E/ChickenStack)
-- **💡 示例**: [示例代码](https://github.com/SharkMI-0x7E/ChickenStack/tree/main/examples)
-- **🧪 测试**: [测试用例](https://github.com/SharkMI-0x7E/ChickenStack/tree/main/tests)
-
-## 🤝 贡献
-
-欢迎贡献代码！请查看 [CONTRIBUTING.md](https://SharkMI-0x7E.github.io/ChickenStack_doc/) 了解如何参与开发。
-
-### 贡献者
+本项目是重度 AI 辅助开发。代码、文档、测试与项目规划绝大部分由 AI 完成；人类维护者仅提出需求与方向。
 
 **AI 开发者**
-- AI GLM-4.7 - 代码生成、测试、文档编写、性能优化
+- GLM-4.7 — 初始版本的代码生成、测试、文档与性能优化
+- Hy3 — 仓库结构清理、AI 协作文档体系与后续维护
 
-**人类开发者**
-- SharkMI-0x7E - 项目规划、代码审查、需求定义
+**使用的工具**
+- IFOW CLI
+- WorkBuddy
 
-感谢各位大佬！
+**人类维护者**
+- SharkMI-0x7E — 提出需求与方向
 
-<a href="https://github.com/SharkMI-0x7E/ChickenStack/graphs/contributors">
-  <img alt="contributors" src="https://contrib.rocks/image?repo=SharkMI-0x7E/ChickenStack" />
-</a>
+## 致谢
 
-## 🙏 致谢
+- [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) — 灵感来源，展示了极简编程语言的魅力
+- [VitePress](https://vitepress.dev/) — 文档构建工具
+- [Python](https://www.python.org/) — 让 ChickenStack 得以实现的语言
 
-- [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) 灵感来源，展示了极简编程语言的魅力
-- [VitePress](https://vitepress.dev/) 提供了优秀的文档构建工具
-- [MaiBot](https://github.com/MaiM-with-u/MaiBot) 文档设计灵感来源
-- [Python](https://www.python.org/) 强大的编程语言，让 ChickenStack 得以实现
+## 注意事项
 
-**也感谢每一位给 ChickenStack 发展提出宝贵意见与建议的用户，感谢陪伴 ChickenStack 走到现在的你们！**
-
-## 📌 注意事项
-
-> [!WARNING]
 > 本仓库仅用于学习和研究目的，使用请遵守当地法律法规，由此造成的问题由使用者负责。
 
-## 📊 仓库状态
-
-![Alt](https://repobeats.axiom.co/api/embed/9faca9fccfc467931b87dd357b60c6362b5cfae0.svg "ChickenStack 仓库状态")
-
-### Star 趋势
-
-[![Star 趋势](https://starchart.cc/SharkMI-0x7E/ChickenStack.svg?variant=adaptive)](https://starchart.cc/SharkMI-0x7E/ChickenStack)
-
-## 📄 许可证
+## 许可证
 
 本项目采用 [MIT License](./LICENSE) 开源。
-
----
-
-<div align="center">
-
-**Made with ❤️ by SharkMI-0x7E**
-
-**如果觉得有用，请给个 ⭐ Star 支持一下！**
-
-</div>

@@ -66,3 +66,8 @@ archive/
 
 # 测试输出产物（benchmark / 优化结果等，运行生成，不提交）
 tests/results/
+
+# === 文档站（ChickenStack_doc：已移回主仓库，仅跟踪源码） ===
+# node_modules / docs.zip / .vitepress 构建产物由其内部 .gitignore 排除；
+# 此处显式确保该目录整体不被误忽略。
+!ChickenStack_doc/

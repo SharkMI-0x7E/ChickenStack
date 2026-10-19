@@ -2,48 +2,40 @@
 
 # ChickenStack
 
-_A Turing Complete Stack-Based Programming Language_
+_A Turing-complete stack-based programming language (RPN syntax)_
 
-> The depth of the stack is immeasurable, and the beauty of code lies in simplicity.
-
----
+![Python](https://img.shields.io/badge/Python-3.9+-blue)
+![License](https://img.shields.io/github/license/SharkMI-0x7E/ChickenStack?label=License)
 
 **Read this in other languages: [English](./README.md), [中文](./README_zh.md).**
 
-![Python Version](https://img.shields.io/badge/Python-3.9+-blue)
-![License](https://img.shields.io/github/license/SharkMI-0x7E/ChickenStack?label=License)
-![Status](https://img.shields.io/badge/Status-Active-green)
-![Contributors](https://img.shields.io/github/contributors/SharkMI-0x7E/ChickenStack.svg?style=flat&label=Contributors)
-![forks](https://img.shields.io/github/forks/SharkMI-0x7E/ChickenStack.svg?style=flat&label=Forks)
-![stars](https://img.shields.io/github/stars/SharkMI-0x7E/ChickenStack?style=flat&label=Stars)
-![issues](https://img.shields.io/github/issues/SharkMI-0x7E/ChickenStack)
-
-<div style="text-align: center">
-<strong>
-<a href="#-quick-start">🚀 Quick Start</a> |
-<a href="#-features">✨ Features</a> |
-<a href="#-documentation">📚 Documentation</a> |
-<a href="#-examples">💡 Examples</a> |
-<a href="#-contributing">🤝 Contributing</a>
-</strong>
 </div>
 
-</div>
+> **Just for fun.**
+>
+> ChickenStack was vibe-coded just because it seemed fun, originally built around December 2025 to January 2026 (first commit in January 2026). It has not been actively developed since, and there is no long-term maintenance plan or guarantee of ongoing updates.
+> The code, docs, and tests were mostly written by AI; the human maintainer (SharkMI-0x7E) only proposed the requirements and direction — no planning, review, or spec work.
+>
+> It is Turing complete and it runs, and it is fine for learning stack-based languages and compiler principles. But don't treat it as a serious tool — it was made for fun.
 
 ---
 
-## 🎉 Introduction
+## Introduction
 
-**🐔 ChickenStack is a simple, elegant, and powerful stack-based programming language using Reverse Polish Notation (RPN) syntax.**
+ChickenStack is a simple, elegant, stack-based programming language using Reverse Polish Notation (RPN). Inspired by Brainfuck but more human-friendly, it has only a handful of basic instructions yet is Turing complete — useful for learning stack data structures, compiler principles, and programming language design. (The name: the "chicken" pecks data on the stack, just like pecking rice — simple and natural.)
 
-- 💭 **Minimalism**: Only 8 basic instructions, each with clear semantics
-- 💭 **Stack-Based Thinking**: All operations are performed on the stack, following functional programming principles
-- 🧠 **Educational Value**: Perfect for learning about stack data structures, compiler principles, and programming language design
-- 🤔 **Turing Complete**: Supports mathematical operations, loops, logic judgments, and can compute any computable function
-- 🔌 **Python API**: Provides Python API for easy integration into Python projects
-- 💝 **Cross-Platform**: Supports Windows, Linux, macOS and other mainstream operating systems
+- Minimalism: a few basic instructions with clear semantics
+- Stack-based: all operations happen on the stack
+- Turing complete: math, loops, logic — any computable function
+- Python API: embed into Python projects
+- Cross-platform: pure Python, runs on Windows, Linux, macOS
+- Extensible: custom instructions and IO handlers
 
-## 🔥 Quick Start
+## How it works
+
+Pipeline: source (`.ch`) → Parser (lexing, parsing, token generation) → Virtual Machine (stack management, instruction execution, IO handling) → output. Pure Python, no compilation needed.
+
+## Quick Start
 
 ### Installation
 
@@ -55,7 +47,7 @@ pip install -r requirements.txt
 
 ### Hello World
 
-Create `hello_world.ch` file:
+Create `hello_world.ch`:
 
 ```ch
 72 " 101 " 108 " 108 " 111 " 32 " 87 " 111 " 114 " 108 " 100 " 10 "
@@ -73,47 +65,15 @@ Output:
 Hello World
 ```
 
-### Advanced Example: Fibonacci Sequence
+### Advanced example: Fibonacci
 
 ```ch
 0 1 10 [ dup + swap dup 1 - swap 1 - ]
 ```
 
-## ✨ Features
+## Documentation
 
-### Why ChickenStack?
-
-Because this "chicken" (Chicken) will "peck" (Peck) data on the stack, just as simple and natural as pecking rice!
-
-### Core Features
-
-- **Easy to Use**
-  - Easy for beginners to use, more human-friendly than Brainfuck
-  - Intuitive syntax with a gentle learning curve
-
-- **Turing Complete**
-  - Supports mathematical operations, loops, logic judgments, etc.
-  - Theoretically capable of writing any program
-
-- **Cross Platform**
-  - Supports Windows, Linux, macOS and other mainstream operating systems
-  - Pure Python implementation, no compilation required, plug and play
-
-- **Rich API**
-  - Provides Python API for easy integration into Python projects
-  - Supports custom IO Handler, highly extensible
-
-- **Extensible**
-  - Supports custom instructions and IO Handler to meet various needs
-  - Can be easily integrated into existing projects
-
-- **Stable and Reliable**
-  - Continuous stable development and maintenance
-  - Comprehensive test coverage, ensuring code quality
-
-## 📚 Documentation
-
-**For first-time users**, please check the [complete documentation](https://SharkMI-0x7E.github.io/ChickenStack_doc/)
+For first-time users, see the [full documentation](https://SharkMI-0x7E.github.io/ChickenStack_doc/):
 
 - [Quick Start](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/installation.html)
 - [Instruction Set](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/instruction-set.html)
@@ -121,124 +81,51 @@ Because this "chicken" (Chicken) will "peck" (Peck) data on the stack, just as s
 - [Python API](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/python-api.html)
 - [VM API](https://SharkMI-0x7E.github.io/ChickenStack_doc/guide/vm-api.html)
 
-> 🤖 **For AI collaborators (including AI coding assistants):** this repo ships an
-> [`AGENTS.md`](./AGENTS.md) entry point, plus [`PROJECT.md`](./PROJECT.md) (project facts)
-> and [`CLAUDE.md`](./CLAUDE.md) (AI behavior rules). Start there before making changes.
+> For AI collaborators (including AI coding assistants): this repo ships an [`AGENTS.md`](./AGENTS.md) entry point, plus [`PROJECT.md`](./PROJECT.md) (project facts) and [`CLAUDE.md`](./CLAUDE.md) (AI behavior rules). Read these before making changes.
 
-## 💡 Examples
+## Examples
 
-Check the `examples/` directory for more example code, including:
+See the `examples/` directory for more:
 
-### Basic Examples
 - [Hello World](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/hello-world.html)
 - [Math Operations](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/math.html)
 - [Stack Operations](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/stack.html)
-
-### Advanced Examples
 - [Loops](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/loops.html)
-- [Fibonacci Sequence](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/fibonacci.html)
+- [Fibonacci](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/fibonacci.html)
 - [Factorial](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/factorial.html)
 - [String Reverse](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/reverse-string.html)
 - [Sum](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/sum.html)
 - [Multiplication Table](https://SharkMI-0x7E.github.io/ChickenStack_doc/examples/multiplication-table.html)
 
-## 🏗️ Architecture
+## Contributing
 
-```mermaid
-graph TD
-    A[ChickenStack 源码<br/>.ch 文件] --> B[Parser 解析器]
-    B --> C[Virtual Machine 虚拟机]
-    C --> D[Output 输出结果]
-    
-    B --> B1[词法分析]
-    B1 --> B2[语法分析]
-    B2 --> B3[Token 生成]
-    
-    C --> C1[栈管理]
-    C1 --> C2[指令执行]
-    C2 --> C3[IO 处理]
-    
-    style A fill:#e1f5ff
-    style B fill:#fff4e6
-    style C fill:#f3e5f5
-    style D fill:#e8f5e9
-    style B1 fill:#ffebee
-    style B2 fill:#ffebee
-    style B3 fill:#ffebee
-    style C1 fill:#e3f2fd
-    style C2 fill:#e3f2fd
-    style C3 fill:#e3f2fd
-```
+Bug reports and pull requests are welcome.
 
-## 🗺️ Roadmap
+### Developers and acknowledgments
 
-- [x] Basic instruction set implementation
-- [x] Python API wrapper
-- [x] Complete documentation system
-- [x] Performance optimization (38.63% improvement)
-- [ ] JIT compilation optimization
-- [ ] Web version interpreter
-- [ ] More language bindings (JavaScript, Go)
-- [ ] IDE plugin support
-- [ ] Online code editor
+This project is heavily AI-assisted. Code, documentation, tests, and project planning were mostly written by AI; the human maintainer only proposed requirements and direction.
 
-## 🔗 Links
+**AI Developers**
+- GLM-4.7 — initial code generation, testing, documentation, and performance optimization
+- Hy3 — repository restructuring, AI collaboration docs system, and ongoing maintenance
 
-- **📚 Documentation**: [Full Documentation](https://SharkMI-0x7E.github.io/ChickenStack_doc/)
-- **🔧 Repository**: [GitHub Repository](https://github.com/SharkMI-0x7E/ChickenStack)
-- **💡 Examples**: [Example Code](https://github.com/SharkMI-0x7E/ChickenStack/tree/main/examples)
-- **🧪 Tests**: [Test Cases](https://github.com/SharkMI-0x7E/ChickenStack/tree/main/tests)
+**Tools used**
+- IFOW CLI
+- WorkBuddy
 
-## 🤝 Contributing
+**Human maintainer**
+- SharkMI-0x7E — proposed requirements and direction
 
-Contributions are welcome! Please check [CONTRIBUTING.md](https://SharkMI-0x7E.github.io/ChickenStack_doc/) to learn how to participate in development.
+## Acknowledgments
 
-### Contributors
+- [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) — inspiration, showing the charm of minimalist languages
+- [VitePress](https://vitepress.dev/) — documentation builder
+- [Python](https://www.python.org/) — the language that made ChickenStack possible
 
-**AI Developer**
-- AI GLM-4.7 - Code generation, testing, documentation, performance optimization
+## Notice
 
-**Human Developer**
-- SharkMI-0x7E - Project planning, code review, requirement definition
+> This repository is for learning and research purposes only. Comply with local laws and regulations when using it; the user is responsible for any problems caused by its use.
 
-Thanks to all the contributors!
-
-<a href="https://github.com/SharkMI-0x7E/ChickenStack/graphs/contributors">
-  <img alt="contributors" src="https://contrib.rocks/image?repo=SharkMI-0x7E/ChickenStack" />
-</a>
-
-## 🙏 Acknowledgments
-
-- [Brainfuck](https://en.wikipedia.org/wiki/Brainfuck) Inspiration source, showing the charm of minimalist programming languages
-- [VitePress](https://vitepress.dev/) Provided excellent documentation building tools
-- [MaiBot](https://github.com/MaiM-with-u/MaiBot) Documentation design inspiration
-- [Python](https://www.python.org/) Powerful programming language that made ChickenStack possible
-
-**Also thanks to every user who has provided valuable opinions and suggestions for the development of ChickenStack, and thank you for accompanying ChickenStack to where it is today!**
-
-## 📌 Notice
-
-> [!WARNING]
-> This repository is for learning and research purposes only. Please comply with local laws and regulations when using it. The user is responsible for any problems caused by its use.
-
-## 📊 Repository Status
-
-![Alt](https://repobeats.axiom.co/api/embed/9faca9fccfc467931b87dd357b60c6362b5cfae0.svg "ChickenStack Repository Status")
-
-### Star History
-
-[![Star History](https://starchart.cc/SharkMI-0x7E/ChickenStack.svg?variant=adaptive)](https://starchart.cc/SharkMI-0x7E/ChickenStack)
-
-## 📄 License
+## License
 
 This project is open sourced under [MIT License](./LICENSE).
-
----
-
-<div align="center">
-
-**Made with ❤️ by SharkMI-0x7E**
-
-**If you find it useful, please give a ⭐ Star to support us!**
-
-</div>
