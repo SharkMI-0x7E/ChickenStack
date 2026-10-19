@@ -10,7 +10,7 @@ _基于栈的图灵完备编程语言_
 
 **其他语言版本: [English](README.md), [中文](README_zh.md).**
 
-![Python Version](https://img.shields.io/badge/Python-3.8+-blue)
+![Python Version](https://img.shields.io/badge/Python-3.9+-blue)
 ![License](https://img.shields.io/github/license/llz162652/ChickenStack?label=协议)
 ![Status](https://img.shields.io/badge/状态-活跃开发-green)
 ![Contributors](https://img.shields.io/github/contributors/llz162652/ChickenStack.svg?style=flat&label=贡献者)
@@ -120,6 +120,9 @@ Hello World
 - [语法说明](https://llz162652.github.io/ChickenStack_doc/guide/syntax.html)
 - [Python API](https://llz162652.github.io/ChickenStack_doc/guide/python-api.html)
 - [虚拟机 API](https://llz162652.github.io/ChickenStack_doc/guide/vm-api.html)
+
+> 🤖 **面向 AI 协作者（含各类 AI 编程助手）：** 本仓库附带 [`AGENTS.md`](./AGENTS.md) 协作入口，
+> 以及 [`PROJECT.md`](./PROJECT.md)（项目事实）与 [`CLAUDE.md`](./CLAUDE.md)（AI 行为准则）。改动前请先读这三个文件。
 
 ## 💡 示例
 

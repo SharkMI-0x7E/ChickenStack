@@ -10,7 +10,7 @@ _A Turing Complete Stack-Based Programming Language_
 
 **Read this in other languages: [English](./README.md), [中文](./README_zh.md).**
 
-![Python Version](https://img.shields.io/badge/Python-3.8+-blue)
+![Python Version](https://img.shields.io/badge/Python-3.9+-blue)
 ![License](https://img.shields.io/github/license/llz162652/ChickenStack?label=License)
 ![Status](https://img.shields.io/badge/Status-Active-green)
 ![Contributors](https://img.shields.io/github/contributors/llz162652/ChickenStack.svg?style=flat&label=Contributors)
@@ -120,6 +120,10 @@ Because this "chicken" (Chicken) will "peck" (Peck) data on the stack, just as s
 - [Syntax](https://llz162652.github.io/ChickenStack_doc/guide/syntax.html)
 - [Python API](https://llz162652.github.io/ChickenStack_doc/guide/python-api.html)
 - [VM API](https://llz162652.github.io/ChickenStack_doc/guide/vm-api.html)
+
+> 🤖 **For AI collaborators (including AI coding assistants):** this repo ships an
+> [`AGENTS.md`](./AGENTS.md) entry point, plus [`PROJECT.md`](./PROJECT.md) (project facts)
+> and [`CLAUDE.md`](./CLAUDE.md) (AI behavior rules). Start there before making changes.
 
 ## 💡 Examples
 

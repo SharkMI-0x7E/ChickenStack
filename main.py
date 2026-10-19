@@ -220,8 +220,7 @@ class ChickenStackInterpreter:
             # 第二步：执行代码
             # ========================================
 
-            print(f"🐔 ChickenStack 启动! (指令数: {len(tokens)})")
-            print("-" * 40)
+            print(f"ChickenStack 运行中... (指令数: {len(tokens)})")
 
             limit = len(tokens)
 
@@ -271,20 +270,14 @@ class ChickenStackInterpreter:
             # ========================================
 
             elapsed = time.time() - start_time
-            print("\n" + "-" * 40)
-            print(f"🏁 运行结束 | 最终栈状态: {self.vm.get_stack_state()}")
-            print(f"⏱️ 执行时间: {elapsed:.3f}秒")
-            print(f"🔄 总迭代次数: {self.vm.iteration_count}")
+            print(f"\n运行结束 | 栈: {self.vm.get_stack_state()} | 耗时: {elapsed:.3f}s | 迭代: {self.vm.iteration_count}")
 
         except Exception as e:
-            # 捕获所有运行时错误，打印详细错误信息
             elapsed = time.time() - start_time
-            print(f"\n❌ 运行错误: {e}")
+            print(f"\n运行错误: {e}")
             if token:
                 print(f"位置: Token #{idx} ({token}) - 行 {token.line}, 列 {token.column}")
-            print(f"栈状态: {self.vm.get_stack_state()}")
-            print(f"🔄 已执行迭代次数: {self.vm.iteration_count}")
-            print(f"⏱️ 执行时间: {elapsed:.3f}秒")
+            print(f"栈: {self.vm.get_stack_state()} | 迭代: {self.vm.iteration_count} | 耗时: {elapsed:.3f}s")
 
 
 def main() -> None:
@@ -321,15 +314,15 @@ def main() -> None:
             # 执行代码
             interpreter.run(code)
         except FileNotFoundError:
-            print(f"❌ 文件不存在: {file_path}")
+            print(f"文件不存在: {file_path}")
         except Exception as e:
-            print(f"❌ 读取文件错误: {e}")
+            print(f"读取文件错误: {e}")
     else:
         # ========================================
         # 演示模式：运行内置示例
         # ========================================
 
-        print("🐔 欢迎来到 ChickenStack (鸡肉卷语言)！")
+        print("ChickenStack 演示模式")
 
         # ========================================
         # 演示1：计算 (10 + 20) * 2

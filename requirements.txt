@@ -1,6 +1,6 @@
 # ChickenStack 运行时无外部依赖
 # 仅使用 Python 标准库
-# Python >= 3.7
+# Python >= 3.9（源码使用 list[Token] / dict[int, int] 等 3.9+ 内置泛型语法；实际运行 3.12）
 
 # 开发依赖
 pytest>=7.0.0

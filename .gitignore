@@ -41,6 +41,8 @@ NO上传VitePress/
 doc/
 docs/
 
+RELEASE_NOTES.md
+
 # 测试覆盖率
 .coverage
 htmlcov/
@@ -49,3 +51,15 @@ htmlcov/
 # 文档构建
 doc/.vitepress/cache/
 doc/.vitepress/dist/
+
+# === AI 协作 / 本地工具（绝对禁止入库） ===
+# 本地 AI 助手状态与记忆、跨工具规则文件：绝不提交到 GitHub
+.workbuddy/
+.trae/
+.claude/
+.aider/
+.cursor/
+.codebuddy/
+
+# 遗留文件归档（year-old 调试脚本 / 历史上下文 txt：本地保留，不提交）
+archive/
