@@ -41,8 +41,6 @@ NO上传VitePress/
 doc/
 docs/
 
-RELEASE_NOTES.md
-
 # 测试覆盖率
 .coverage
 htmlcov/
@@ -61,11 +59,20 @@ doc/.vitepress/dist/
 .cursor/
 .codebuddy/
 
+# 本地 AI / 规划文件（绝不入库）
+PLAN.md
+AGENTS.md
+CLAUDE.md
+PROJECT.md
+
 # 遗留文件归档（year-old 调试脚本 / 历史上下文 txt：本地保留，不提交）
 archive/
 
 # 测试输出产物（benchmark / 优化结果等，运行生成，不提交）
 tests/results/
+
+# 生成的示例图（运行 quadratic.py 生成，不提交）
+examples/quadratic_plot.html
 
 # === 文档站（ChickenStack_doc：独立项目，不纳入本仓库） ===
 ChickenStack_doc/
