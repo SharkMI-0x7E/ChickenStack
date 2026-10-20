@@ -33,7 +33,7 @@ def test_token_class():
     # 测试 __slots__ 是否生效（不应该有 __dict__）
     assert not hasattr(token1, '__dict__')
 
-    print("✅ Token 类测试通过")
+    print("Token 类测试通过")
 
 
 def test_parser():
@@ -57,15 +57,15 @@ def test_parser():
     assert len(tokens) == 7
     assert tokens[0].value == 5
     assert tokens[1].type == TokenType.LOOP_START
-    assert tokens[5].type == TokenType.LOOP_END
+    assert tokens[6].type == TokenType.LOOP_END
 
     # 测试循环跳转表
     loop_table = parser.get_loop_table()
     assert 1 in loop_table
-    assert loop_table[1] == 5
-    assert loop_table[5] == 1
+    assert loop_table[1] == 6
+    assert loop_table[6] == 1
 
-    print("✅ Parser 测试通过")
+    print("Parser 测试通过")
 
 
 def test_vm_iteration_limit():
@@ -93,7 +93,7 @@ def test_vm_iteration_limit():
     except RuntimeError as e:
         assert "超过最大迭代次数" in str(e)
 
-    print("✅ VM 迭代限制测试通过")
+    print("VM 迭代限制测试通过")
 
 
 def test_vm_jump_validation():
@@ -119,7 +119,7 @@ def test_vm_jump_validation():
     except IndexError as e:
         assert "无效的跳转目标" in str(e)
 
-    print("✅ VM 跳转验证测试通过")
+    print("VM 跳转验证测试通过")
 
 
 def test_vm_division_by_zero():
@@ -146,7 +146,7 @@ def test_vm_division_by_zero():
     except ZeroDivisionError as e:
         assert "模数为零" in str(e)
 
-    print("✅ 除零错误测试通过")
+    print("除零错误测试通过")
 
 
 def test_interpreter():
@@ -167,14 +167,12 @@ def test_interpreter():
     interpreter.run("5 [ : . 1 - ]")
     assert interpreter.vm.iteration_count > 0
 
-    print("✅ 解释器测试通过")
+    print("解释器测试通过")
 
 
 def main():
     """运行所有测试"""
-    print("=" * 60)
-    print("🐔 ChickenStack 修复验证测试")
-    print("=" * 60)
+    print("ChickenStack 修复验证测试")
 
     try:
         test_token_class()
@@ -184,11 +182,9 @@ def main():
         test_vm_division_by_zero()
         test_interpreter()
 
-        print("\n" + "=" * 60)
-        print("✅ 所有测试通过！修复成功！")
-        print("=" * 60)
+        print("所有测试通过！修复成功！")
     except Exception as e:
-        print(f"\n❌ 测试失败: {e}")
+        print(f"\n 测试失败: {e}")
         import traceback
         traceback.print_exc()
         sys.exit(1)

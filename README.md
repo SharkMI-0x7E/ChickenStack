@@ -2,7 +2,7 @@
 
 # ChickenStack
 
-_A Turing-complete stack-based programming language (RPN syntax)_
+_A stack-based programming language (RPN syntax)_
 
 ![Python](https://img.shields.io/badge/Python-3.9+-blue)
 ![License](https://img.shields.io/github/license/SharkMI-0x7E/ChickenStack?label=License)
@@ -16,24 +16,28 @@ _A Turing-complete stack-based programming language (RPN syntax)_
 > ChickenStack was vibe-coded just because it seemed fun, originally built around December 2025 to January 2026 (first commit in January 2026). It has not been actively developed since, and there is no long-term maintenance plan or guarantee of ongoing updates.
 > The code, docs, and tests were mostly written by AI; the human maintainer (SharkMI-0x7E) only proposed the requirements and direction — no planning, review, or spec work.
 >
-> It is Turing complete and it runs, and it is fine for learning stack-based languages and compiler principles. But don't treat it as a serious tool — it was made for fun.
+> It runs, and it is fine for learning stack-based languages and compiler principles. But don't treat it as a serious tool — it was made for fun.
 
 ---
 
 ## Introduction
 
-ChickenStack is a simple, elegant, stack-based programming language using Reverse Polish Notation (RPN). Inspired by Brainfuck but more human-friendly, it has only a handful of basic instructions yet is Turing complete — useful for learning stack data structures, compiler principles, and programming language design. (The name: the "chicken" pecks data on the stack, just like pecking rice — simple and natural.)
+ChickenStack is a simple, elegant, stack-based programming language using Reverse Polish Notation (RPN). Inspired by Brainfuck but more human-friendly, it has only a handful of basic instructions, useful for learning stack data structures, compiler principles, and programming language design. (The name: the "chicken" pecks data on the stack, just like pecking rice — simple and natural.)
 
 - Minimalism: a few basic instructions with clear semantics
 - Stack-based: all operations happen on the stack
-- Turing complete: math, loops, logic — any computable function
+- Instruction set: math, stack ops, logic, loops, conditionals, strings, registers, and I/O
+- Number types: arbitrary-precision integers and floats (`3.14`)
 - Python API: embed into Python projects
+- Bytecode compiler: translates to Python code objects with stack slots resolved into locals, roughly 50x faster on numeric workloads
 - Cross-platform: pure Python, runs on Windows, Linux, macOS
 - Extensible: custom instructions and IO handlers
 
 ## How it works
 
 Pipeline: source (`.ch`) → Parser (lexing, parsing, token generation) → Virtual Machine (stack management, instruction execution, IO handling) → output. Pure Python, no compilation needed.
+
+For long-running numeric programs, `chicken_stack/compiler.py` translates the same token stream into equivalent Python source and hands it to the built-in `compile()`. Stack depths are resolved at compile time, so stack slots become plain local variables instead of list operations. Output is byte-for-byte identical to the interpreter; on the Mandelbrot demo it runs about 50x faster (3.2s down to 0.06s of CPU time).
 
 ## Quick Start
 
@@ -106,7 +110,7 @@ Bug reports and pull requests are welcome.
 This project is heavily AI-assisted. Code, documentation, tests, and project planning were mostly written by AI; the human maintainer only proposed requirements and direction.
 
 **AI Developers**
-- GLM-4.7 — initial code generation, testing, documentation, and performance optimization
+- GLM-4.7 — initial code generation, testing, and documentation
 - Hy3 — repository restructuring, AI collaboration docs system, and ongoing maintenance
 
 **Tools used**

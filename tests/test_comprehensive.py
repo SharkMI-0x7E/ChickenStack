@@ -1,6 +1,5 @@
 """
-🐔 ChickenStack 完整测试套件
-====================================
+ChickenStack 完整测试套件
 
 本文件包含 ChickenStack 语言的完整测试套件，涵盖所有语言特性的测试用例。
 每个测试函数都专注于验证特定的语言功能。
@@ -32,19 +31,16 @@ python test_comprehensive.py --all
 ## 测试输出示例
 
 ```
-🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔
-🐔 ChickenStack 完整测试套件 🐔
-🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔🐔
 
-==================================================
-📊 测试统计
-==================================================
+ChickenStack 完整测试套件
+
+
+测试统计
 总测试数: 50
 通过: 48
 失败: 2
 跳过: 0
 执行时间: 2.345秒
-==================================================
 ```
 """
 
@@ -59,9 +55,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from main import ChickenStackInterpreter
 
 
-# ========================================
 # 测试工具类
-# ========================================
 
 class TestResult:
     """测试结果类"""
@@ -105,26 +99,23 @@ class TestResult:
 
     def print_summary(self):
         """打印测试摘要"""
-        print("\n" + "=" * 60)
-        print("📊 测试统计")
-        print("=" * 60)
+        print("测试统计")
         print(f"总测试数: {self.total}")
-        print(f"✅ 通过: {self.passed}")
-        print(f"❌ 失败: {self.failed}")
-        print(f"⏭️ 跳过: {self.skipped}")
-        print(f"⏱️ 执行时间: {self.elapsed():.3f}秒")
-        print("=" * 60)
+        print(f"通过: {self.passed}")
+        print(f"失败: {self.failed}")
+        print(f"跳过: {self.skipped}")
+        print(f"执行时间: {self.elapsed():.3f}秒")
 
         if self.errors:
-            print("\n❌ 失败详情:")
+            print("\n 失败详情:")
             for name, error in self.errors:
-                print(f"  - {name}: {error}")
+                print(f" - {name}: {error}")
 
         print()
         if self.failed == 0:
-            print("✨ 所有测试通过！")
+            print("所有测试通过！")
         else:
-            print(f"⚠️ 有 {self.failed} 个测试失败")
+            print(f"有 {self.failed} 个测试失败")
 
 
 class TestCase:
@@ -142,7 +133,7 @@ class TestCase:
 
     def run(self, result: TestResult) -> bool:
         """运行测试用例"""
-        print(f"  测试: {self.name}")
+        print(f" 测试: {self.name}")
 
         try:
             start_time = time.time()
@@ -193,15 +184,11 @@ class TestCase:
                 return False
 
 
-# ========================================
 # 基础测试
-# ========================================
 
 def test_basic_math(result: TestResult):
     """测试基本数学运算"""
-    print("\n" + "=" * 60)
-    print("🧮 基础测试 - 数学运算")
-    print("=" * 60)
+    print("基础测试 - 数学运算")
 
     tests = [
         TestCase("加法", "5 3 + .", expected_output="8"),
@@ -219,9 +206,7 @@ def test_basic_math(result: TestResult):
 
 def test_stack_ops(result: TestResult):
     """测试栈操作"""
-    print("\n" + "=" * 60)
-    print("📚 基础测试 - 栈操作")
-    print("=" * 60)
+    print("基础测试 - 栈操作")
 
     tests = [
         TestCase("复制", "5 : . .", expected_output="5 5"),
@@ -237,9 +222,7 @@ def test_stack_ops(result: TestResult):
 
 def test_logic_ops(result: TestResult):
     """测试逻辑运算"""
-    print("\n" + "=" * 60)
-    print("🔍 基础测试 - 逻辑运算")
-    print("=" * 60)
+    print("基础测试 - 逻辑运算")
 
     tests = [
         TestCase("相等-真", "5 5 = .", expected_output="1"),
@@ -253,15 +236,11 @@ def test_logic_ops(result: TestResult):
         test.run(result)
 
 
-# ========================================
 # I/O 测试
-# ========================================
 
 def test_io(result: TestResult):
     """测试输入输出"""
-    print("\n" + "=" * 60)
-    print("🖥️ I/O 测试")
-    print("=" * 60)
+    print("I/O 测试")
 
     tests = [
         TestCase("打印 HELLO", '72 " 69 " 76 " 76 " 79 " 10 "', expected_output="HELLO\n"),
@@ -274,15 +253,11 @@ def test_io(result: TestResult):
         test.run(result)
 
 
-# ========================================
 # 循环测试
-# ========================================
 
 def test_loops(result: TestResult):
     """测试循环"""
-    print("\n" + "=" * 60)
-    print("🔄 循环测试")
-    print("=" * 60)
+    print("循环测试")
 
     tests = [
         TestCase("循环倒数", "5 [ : . 1 - ]", expected_output="5 4 3 2 1", expected_stack=[0]),
@@ -293,15 +268,11 @@ def test_loops(result: TestResult):
         test.run(result)
 
 
-# ========================================
 # 边界测试
-# ========================================
 
 def test_boundary(result: TestResult):
     """测试边界情况和错误处理"""
-    print("\n" + "=" * 60)
-    print("⚠️ 边界测试")
-    print("=" * 60)
+    print("边界测试")
 
     tests = [
         TestCase("空代码", "", expected_stack=[]),
@@ -317,15 +288,11 @@ def test_boundary(result: TestResult):
         test.run(result)
 
 
-# ========================================
 # 性能测试
-# ========================================
 
 def test_performance(result: TestResult):
     """测试性能"""
-    print("\n" + "=" * 60)
-    print("⚡ 性能测试")
-    print("=" * 60)
+    print("性能测试")
 
     tests = [
         TestCase("大循环-100次", "100 [ : . 1 - ]", timeout=10.0, expected_stack=[0]),
@@ -334,22 +301,18 @@ def test_performance(result: TestResult):
     ]
 
     for test in tests:
-        print(f"  测试: {test.name} (超时: {test.timeout}秒)")
+        print(f" 测试: {test.name} (超时: {test.timeout}秒)")
         start = time.time()
         test.run(result)
         elapsed = time.time() - start
-        print(f"    ⏱️ 执行时间: {elapsed:.3f}秒")
+        print(f"    执行时间: {elapsed:.3f}秒")
 
 
-# ========================================
 # 综合测试
-# ========================================
 
 def test_combined(result: TestResult):
     """测试综合示例"""
-    print("\n" + "=" * 60)
-    print("🎯 综合测试")
-    print("=" * 60)
+    print("综合测试")
 
     tests = [
         TestCase("复杂表达式", "10 20 + 2 * .", expected_output="60"),
@@ -360,18 +323,14 @@ def test_combined(result: TestResult):
         test.run(result)
 
 
-# ========================================
 # 主函数
-# ========================================
 
 def run_all_tests():
     """运行所有测试"""
     result = TestResult()
     result.start()
 
-    print("\n" + "🐔" * 30)
-    print("🐔 ChickenStack 完整测试套件 🐔")
-    print("🐔" * 30)
+    print("ChickenStack 完整测试套件 ")
 
     # 运行所有测试
     test_basic_math(result)
@@ -394,9 +353,7 @@ def run_specific_test(test_type: str):
     result = TestResult()
     result.start()
 
-    print("\n" + "🐔" * 30)
-    print("🐔 ChickenStack 测试套件 🐔")
-    print("🐔" * 30)
+    print("ChickenStack 测试套件 ")
 
     test_map = {
         "basic": lambda: (test_basic_math(result), test_stack_ops(result), test_logic_ops(result)),
@@ -410,7 +367,7 @@ def run_specific_test(test_type: str):
     if test_type in test_map:
         test_map[test_type]()
     else:
-        print(f"❌ 未知的测试类型: {test_type}")
+        print(f"未知的测试类型: {test_type}")
         print("可用的测试类型: basic, io, loops, boundary, performance, combined")
         return False
 

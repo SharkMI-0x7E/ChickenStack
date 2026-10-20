@@ -1,6 +1,5 @@
 """
-🐔 ChickenStack 虚拟机核心模块
-====================================
+ChickenStack 虚拟机核心模块
 
 本模块是 ChickenStack 语言的虚拟机核心，负责执行所有指令操作。
 采用基于栈的计算模型，实现了数学运算、栈操作、逻辑判断和输入输出功能。
@@ -82,6 +81,10 @@
 | : | op_dup() | 复制 | a → a a |
 | \\ | op_swap() | 交换 | a b → b a |
 | $ | op_drop() | 丢弃 | a b → a |
+| ~ | op_neg() | 取负 | a → -a |
+| @ | op_rot() | 旋转栈顶三个 | a b c → b c a |
+| & | op_over() | 复制第二个 | a b → a b a |
+| ! | op_pick() | 按深度复制 | 弹出 n，复制往下第 n 个 |
 | = | op_eq() | 相等 | a b → (a==b) |
 | > | op_gt() | 大于 | a b → (a>b) |
 | . | op_print_num() | 打印数字 | a → (输出 a) |
@@ -144,7 +147,7 @@ class ChickenStackVM:
     """
 
     # 使用 __slots__ 减少内存占用
-    __slots__ = ('stack', 'loops', 'io_handler', 'max_iterations', 'iteration_count')
+    __slots__ = ('stack', 'loops', 'braces', 'io_handler', 'max_iterations', 'iteration_count', 'registers')
 
     # 默认最大迭代次数（防止无限循环）
     DEFAULT_MAX_ITERATIONS = 1000000
@@ -167,13 +170,13 @@ class ChickenStackVM:
         """
         self.stack: list[int] = []           # 数据栈，存储所有操作数
         self.loops: dict[int, int] = {}           # 循环跳转表，由 Parser 填充
+        self.braces: dict[int, int] = {}         # if/else 跳转表，由 Parser 填充
+        self.registers: list[int] = [0] * 26     # a-z 寄存器
         self.io_handler = io_handler  # 输入输出处理器
         self.max_iterations = max_iterations or self.DEFAULT_MAX_ITERATIONS  # 最大迭代次数
         self.iteration_count = 0  # 当前迭代计数器
 
-    # ========================================
     # 基础栈操作方法
-    # ========================================
 
     def _require_stack(self, min_size: int = 1) -> None:
         """
@@ -224,9 +227,9 @@ class ChickenStackVM:
             [10, 20]
         """
         # 类型验证
-        if not isinstance(value, int):
+        if not isinstance(value, (int, float)):
             raise TypeError(
-                f"只能推入整数，收到类型: {type(value).__name__}"
+                f"只能推入数字，收到类型: {type(value).__name__}"
             )
 
         # 栈大小检查
@@ -285,9 +288,7 @@ class ChickenStackVM:
             raise ValueError("栈空了，无法查看")
         return self.stack[-1]
 
-    # ========================================
     # 迭代控制和跳转验证方法
-    # ========================================
 
     def set_max_iterations(self, max_iterations: int) -> None:
         """
@@ -369,9 +370,7 @@ class ChickenStackVM:
                 f"无效的跳转目标: {target_idx} (有效范围: 0-{max_idx})"
             )
 
-    # ========================================
     # 数学运算方法
-    # ========================================
 
     def op_add(self) -> None:
         """
@@ -508,9 +507,7 @@ class ChickenStackVM:
 
         self.push(a % b)
 
-    # ========================================
     # 栈操作方法
-    # ========================================
 
     def op_dup(self) -> None:
         """
@@ -597,9 +594,66 @@ class ChickenStackVM:
         self._require_stack(1)
         self.pop()  # 显式弹出栈顶元素
 
-    # ========================================
+    def op_neg(self) -> None:
+        """
+        取负 (Negate)
+
+        栈变化: [a] -> [-a]
+
+        Raises:
+            ValueError: 当栈为空时
+        """
+        self._require_stack(1)
+        self.push(-self.pop())
+
+    def op_rot(self) -> None:
+        """
+        旋转栈顶三个元素 (Rot)
+
+        栈变化: [a, b, c] -> [b, c, a]
+
+        Raises:
+            ValueError: 当栈中元素少于 3 个时
+        """
+        self._require_stack(3)
+        c = self.pop()
+        b = self.pop()
+        a = self.pop()
+        self.push(b)
+        self.push(c)
+        self.push(a)
+
+    def op_over(self) -> None:
+        """
+        复制第二个元素 (Over)
+
+        栈变化: [a, b] -> [a, b, a]
+
+        Raises:
+            ValueError: 当栈中元素少于 2 个时
+        """
+        self._require_stack(2)
+        self.push(self.stack[-2])
+
+    def op_pick(self) -> None:
+        """
+        弹出 n，复制从栈顶往下第 n 个元素（0 表示栈顶）
+
+        例如栈为 [10, 20, 30]，压入 1 后执行 pick：
+        弹出 1，复制往下第 1 个元素 20，结果为 [10, 20, 30, 20]。
+
+        Raises:
+            ValueError: 栈为空，或 n 超出当前栈深度
+        """
+        self._require_stack(1)
+        n = self.pop()
+        if isinstance(n, float):
+            n = int(n)
+        if n < 0 or n >= len(self.stack):
+            raise ValueError(f"pick 索引越界: {n} (栈深度 {len(self.stack)})")
+        self.push(self.stack[-1 - n])
+
     # 逻辑运算方法
-    # ========================================
 
     def op_eq(self) -> None:
         """
@@ -675,9 +729,7 @@ class ChickenStackVM:
         a = self.pop()
         self.push(1 if a > b else 0)
 
-    # ========================================
     # 输入输出方法
-    # ========================================
 
     def op_print_num(self) -> None:
         """
@@ -702,7 +754,9 @@ class ChickenStackVM:
             - 使用 flush=True 确保立即输出
         """
         if self.stack:
-            print(f"{self.pop()}", end=' ', flush=True)
+            value = self.pop()
+            text = f"{value:.10g}" if isinstance(value, float) else str(value)
+            print(text, end=' ', flush=True)
 
     def op_print_char(self) -> None:
         """
@@ -732,6 +786,9 @@ class ChickenStackVM:
         self._require_stack(1)
         value = self.pop()
 
+        if isinstance(value, float):
+            value = int(value)
+
         # 验证 Unicode 范围
         if value < 0 or value > 1114111:
             raise ValueError(
@@ -759,7 +816,7 @@ class ChickenStackVM:
             >>> from chicken_stack import IOHandler
             >>> vm = ChickenStackVM(io_handler=IOHandler())
             >>> vm.op_input_num()
-            👉 [等待输入数字] 42
+             [等待输入数字] 42
             >>> vm.get_stack_state()
             [42]
 
@@ -795,7 +852,7 @@ class ChickenStackVM:
             >>> from chicken_stack import IOHandler
             >>> vm = ChickenStackVM(io_handler=IOHandler())
             >>> vm.op_input_char()
-            👉 [等待输入字符] A
+             [等待输入字符] A
             >>> vm.get_stack_state()
             [65]  # 'A' 的 ASCII 码是 65
 
@@ -822,9 +879,7 @@ class ChickenStackVM:
         except (AttributeError, TypeError) as e:
             raise TypeError(f"无效的输入类型: {type(char_bytes)}") from e
 
-    # ========================================
     # 栈状态管理方法
-    # ========================================
 
     def get_stack_state(self) -> list[int]:
         """

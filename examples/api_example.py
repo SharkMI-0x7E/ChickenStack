@@ -1,6 +1,5 @@
 """
-🐔 ChickenStack API 使用示例
-====================================
+ChickenStack API 使用示例
 
 本文件展示如何从 Python 代码中使用 ChickenStack 解释器 API。
 包含所有核心功能的使用方法。
@@ -26,6 +25,11 @@ from main import ChickenStackInterpreter
 4. **ChickenStackInterpreter**: 完整的解释器（整合上述组件）
 """
 
+import os
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from chicken_stack import ChickenStackVM, Parser, IOHandler
 from main import ChickenStackInterpreter
 
@@ -36,9 +40,7 @@ def example_1_basic_usage():
 
     使用 ChickenStackInterpreter 运行简单的 ChickenStack 代码。
     """
-    print("=" * 60)
     print("示例1: 基本使用方法")
-    print("=" * 60)
 
     # 创建解释器
     interpreter = ChickenStackInterpreter()
@@ -57,9 +59,7 @@ def example_2_vm_operations():
 
     展示如何直接操作 ChickenStackVM。
     """
-    print("=" * 60)
     print("示例2: 直接使用虚拟机")
-    print("=" * 60)
 
     # 创建虚拟机
     vm = ChickenStackVM()
@@ -89,9 +89,7 @@ def example_3_parser_usage():
 
     展示如何使用 Parser 解析源代码。
     """
-    print("=" * 60)
     print("示例3: 使用解析器")
-    print("=" * 60)
 
     # 创建解析器
     parser = Parser()
@@ -116,28 +114,14 @@ def example_4_io_handler():
     """
     示例4: 使用 IO Handler
 
-    展示如何使用 IOHandler 进行输入输出。
+    展示 IOHandler 的行输出工具（数字/字符输出由 VM 负责）。
     """
-    print("=" * 60)
-    print("示例4: 使用 IO Handler")
-    print("=" * 60)
+    print("示例4: 使用 IO Handler 的行输出")
 
     # 创建 IO Handler
     io = IOHandler()
 
-    # 打印数字
-    print("打印数字:")
-    io.print_num(42)
-    print()
-
-    # 打印字符
-    print("打印字符:")
-    io.print_char(65)  # 'A'
-    io.print_char(66)  # 'B'
-    io.print_char(67)  # 'C'
-    print()
-
-    # 打印行
+    # 数字/字符输出由 VM 负责；IOHandler 这里演示行输出
     print("打印行:")
     io.print_line("Hello from IOHandler!")
 
@@ -150,9 +134,7 @@ def example_5_complex_calculation():
 
     展示如何进行复杂的数学计算。
     """
-    print("=" * 60)
     print("示例5: 复杂计算")
-    print("=" * 60)
 
     interpreter = ChickenStackInterpreter()
 
@@ -162,17 +144,8 @@ def example_5_complex_calculation():
     print("计算: (10 + 20) * 2 - 5")
     interpreter.run(code)
 
-    # 计算阶乘 5! = 120 (1 * 2 * 3 * 4 * 5)
-    code = "1 1 5 [ 1 + : * ] ."
-    print(f"\n代码: {code}")
-    print("计算: 5!")
-    interpreter.run(code)
-
-    # 计算累加和 1+2+3+4+5 = 15
-    code = "0 1 5 [ : + 1 + ] ."
-    print(f"\n代码: {code}")
-    print("计算: 1+2+3+4+5")
-    interpreter.run(code)
+    # 注：本语言循环只看栈顶，且只有 dup/swap/drop，
+    # 无法在保留计数器的同时访问更深的累加器，故不提供阶乘/累加示例。
 
     print()
 
@@ -183,20 +156,13 @@ def example_6_loop_operations():
 
     展示如何使用循环控制结构。
     """
-    print("=" * 60)
     print("示例6: 循环操作")
-    print("=" * 60)
 
     interpreter = ChickenStackInterpreter()
 
     # 循环倒数
     code = "5 [ : . 1 - ]"
     print(f"循环倒数: {code}")
-    interpreter.run(code)
-
-    # 循环计数
-    code = "0 1 5 [ : . 1 + ]"
-    print(f"\n循环计数: {code}")
     interpreter.run(code)
 
     # 条件循环
@@ -213,9 +179,7 @@ def example_7_stack_operations():
 
     展示如何使用栈操作指令。
     """
-    print("=" * 60)
     print("示例7: 栈操作")
-    print("=" * 60)
 
     vm = ChickenStackVM()
 
@@ -240,6 +204,31 @@ def example_7_stack_operations():
     vm.push(20)
     vm.op_drop()
     print(f"栈: {vm.get_stack_state()}")
+    vm.clear_stack()
+
+    # 旋转
+    print("\n旋转 (@):")
+    for value in (1, 2, 3):
+        vm.push(value)
+    vm.op_rot()
+    print(f"栈: {vm.get_stack_state()}")
+    vm.clear_stack()
+
+    # 复制第二个
+    print("\n复制第二个 (&):")
+    vm.push(1)
+    vm.push(2)
+    vm.op_over()
+    print(f"栈: {vm.get_stack_state()}")
+    vm.clear_stack()
+
+    # 按深度复制
+    print("\n按深度复制 (!):")
+    for value in (10, 20, 30):
+        vm.push(value)
+    vm.push(1)
+    vm.op_pick()
+    print(f"栈: {vm.get_stack_state()}")
 
     print()
 
@@ -250,9 +239,7 @@ def example_8_logic_operations():
 
     展示如何使用逻辑运算指令。
     """
-    print("=" * 60)
     print("示例8: 逻辑运算")
-    print("=" * 60)
 
     vm = ChickenStackVM()
 
@@ -282,9 +269,7 @@ def example_9_character_output():
 
     展示如何打印字符。
     """
-    print("=" * 60)
     print("示例9: 字符输出")
-    print("=" * 60)
 
     interpreter = ChickenStackInterpreter()
 
@@ -309,9 +294,7 @@ def example_10_error_handling():
 
     展示如何处理错误。
     """
-    print("=" * 60)
     print("示例10: 错误处理")
-    print("=" * 60)
 
     interpreter = ChickenStackInterpreter()
 
@@ -336,9 +319,7 @@ def example_11_custom_vm():
 
     展示如何创建自定义的虚拟机配置。
     """
-    print("=" * 60)
     print("示例11: 自定义虚拟机")
-    print("=" * 60)
 
     # 创建自定义 IO Handler
     io = IOHandler()
@@ -362,9 +343,7 @@ def example_12_step_by_step():
 
     展示如何逐步执行代码并查看栈状态。
     """
-    print("=" * 60)
     print("示例12: 逐步执行")
-    print("=" * 60)
 
     vm = ChickenStackVM()
 
@@ -383,7 +362,7 @@ def example_12_step_by_step():
     # 步骤3: 加法 (10 + 20 = 30)
     vm.op_add()
     print(f"步骤3: op_add() -> 栈: {vm.get_stack_state()}")
-    print("        计算: 10 + 20 = 30")
+    print("       计算: 10 + 20 = 30")
 
     # 步骤4: 推入 2
     vm.push(2)
@@ -392,7 +371,7 @@ def example_12_step_by_step():
     # 步骤5: 乘法 (30 * 2 = 60)
     vm.op_mul()
     print(f"步骤5: op_mul() -> 栈: {vm.get_stack_state()}")
-    print("        计算: 30 * 2 = 60")
+    print("       计算: 30 * 2 = 60")
 
     # 步骤6: 打印
     print(f"步骤6: op_print_num() -> 输出: ", end='')
@@ -406,9 +385,7 @@ def main():
     """
     运行所有示例
     """
-    print("\n" + "🐔" * 30)
-    print("🐔 ChickenStack API 使用示例 🐔")
-    print("🐔" * 30)
+    print("ChickenStack API 使用示例 ")
     print()
 
     # 运行所有示例
@@ -425,9 +402,7 @@ def main():
     example_11_custom_vm()
     example_12_step_by_step()
 
-    print("=" * 60)
-    print("✅ 所有示例运行完成！")
-    print("=" * 60)
+    print("所有示例运行完成！")
 
 
 if __name__ == "__main__":

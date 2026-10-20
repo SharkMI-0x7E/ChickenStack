@@ -1,8 +1,7 @@
-"""
-🐔 ChickenStack - 基于栈的图灵完备编程语言
-================================================
+r"""
+ChickenStack - 基于栈的 RPN 编程语言
 
-ChickenStack 是一种受 Brainfuck 启发、但更人类友好的图灵完备编程语言。
+ChickenStack 是一种受 Brainfuck 启发、但更人类友好的栈式编程语言。
 它基于 "栈 (Stack)" 和 "逆波兰表达式 (RPN)" 设计，避免了 Brainfuck 中痛苦的指针移动。
 
 ## 核心设计原理
@@ -12,12 +11,17 @@ ChickenStack 是一种受 Brainfuck 启发、但更人类友好的图灵完备�
    - 采用后缀表达式 (Reverse Polish Notation)
    - 例如：计算 5 + 3 写作 "5 3 +"（先入栈5，再入栈3，最后执行加法）
 
-2. **图灵完备性**
+2. **指令覆盖**
    - 支持基本的数学运算 (+, -, *, /, %)
-   - 支持栈操作 (复制、交换、丢弃)
+   - 支持栈操作 (复制、交换、丢弃、旋转、复制第二个、按深度复制)
+   - 支持条件分支 ({ then | else })
+   - 支持字符串 '...'、负数字面量 ~5、26 个寄存器 (a-z / A-Z)
+   - 支持整数与小数（3.14），混算按 Python 规则提升
    - 支持逻辑判断 (=, >)
    - 支持循环控制 ([, ])
    - 支持输入输出 (., ", ,, ?)
+
+   > 注：语言在理论上具备图灵完备的潜力，但本项目未给出严格论证；且实现层面有栈大小（10000）和迭代次数（1000000）上限，因此并非严格图灵完备。
 
 3. **人类可读性**
    - 使用直观的符号而非晦涩的操作符
@@ -39,8 +43,12 @@ ChickenStack 是一种受 Brainfuck 启发、但更人类友好的图灵完备�
 ## 指令集
 
 ### 数据 (Data)
-- 0-9: 输入多位数字（如 "1 0" 表示 10）
-- 空格: 分隔符，用于分隔数字和符号
+- 123: 整数字面量，任意位数
+- 3.14: 小数字面量（IEEE 754 double），小数点前必须有数字，`.5` 非法
+- ~5: 负数字面量（等价于 5 ~），同样支持小数 ~0.5
+- '...': 字符串字面量，执行时原样打印，不压栈
+- a-z: 读取寄存器（a=0 … z=25）
+- A-Z: 写入寄存器（弹出栈顶）
 
 ### 数学运算 (Math)
 - +: 加法（取栈顶两个数相加）
@@ -48,11 +56,15 @@ ChickenStack 是一种受 Brainfuck 启发、但更人类友好的图灵完备�
 - *: 乘法
 - /: 除法
 - %: 取余数
+- ~: 取负（5 ~ 得到 -5）
 
 ### 栈操作 (Stack Ops)
 - :: 复制栈顶 (Duplicate) -> 5 : 变成 5 5
 - \: 交换栈顶 (Swap) -> 1 2 \ 变成 2 1
 - $: 丢弃栈顶 (Pop)
+- @: 旋转栈顶三个 (Rot) -> a b c 变成 b c a
+- &: 复制第二个 (Over) -> a b 变成 a b a
+- !: 按深度复制 (Pick) -> 弹出 n，复制往下第 n 个
 
 ### 输入输出 (I/O)
 - .: 打印数字（如 65 . 输出 65）
@@ -65,6 +77,7 @@ ChickenStack 是一种受 Brainfuck 启发、但更人类友好的图灵完备�
 - ]: 循环结束（跳回 [）
 - =: 判断相等（相等推入 1，不等推入 0）
 - >: 判断大于
+- { then | else }: 条件分支（`{` 弹出条件，0 执行 else；`| else` 可省略）
 
 ## 模块结构
 
@@ -146,6 +159,17 @@ code = "5 [ : . 1 - ]"
 from .vm import ChickenStackVM
 from .parser import Parser, Token, TokenType
 from .io_handler import IOHandler
+from .interpreter import ChickenStackInterpreter
+from .compiler import CompiledProgram, compile_source
 
-__version__ = "1.0.0"
-__all__ = ["ChickenStackVM", "Parser", "IOHandler", "Token", "TokenType"]
+__version__ = "1.1.0"
+__all__ = [
+    "ChickenStackVM",
+    "ChickenStackInterpreter",
+    "Parser",
+    "IOHandler",
+    "Token",
+    "TokenType",
+    "CompiledProgram",
+    "compile_source",
+]

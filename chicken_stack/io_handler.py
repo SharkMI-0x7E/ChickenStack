@@ -1,8 +1,7 @@
 """
-🐔 ChickenStack 输入输出处理模块
-====================================
+ChickenStack 输入输出处理模块
 
-本模块负责处理 ChickenStack 语言的所有输入输出操作。
+本模块负责处理 ChickenStack 语言的输入操作（输出由 VM 负责）。
 支持无缓冲的键盘输入，提供流畅的交互体验。
 
 ## 设计目标
@@ -28,8 +27,8 @@
 
 1. **字符输入 (? 指令)**: 读取单个字符并转换为 ASCII 码
 2. **数字输入 (, 指令)**: 读取多位数字并转换为整数
-3. **数字输出 (. 指令)**: 打印栈顶数字
-4. **字符输出 (" 指令)**: 将 ASCII 码转换为字符并打印
+
+> 数字/字符的输出由 VM（op_print_num / op_print_char）负责，不在本模块内。
 
 ## 示例
 
@@ -45,11 +44,6 @@ ascii_code = ord(char_bytes)  # 转换为 ASCII 码，如 65
 # 读取数字
 number = io.get_num()  # 返回整数，如 42
 
-# 打印数字
-io.print_num(42)  # 输出: 42
-
-# 打印字符
-io.print_char(65)  # 输出: A
 ```
 """
 
@@ -64,7 +58,7 @@ class IOHandler:
     """
     输入输出处理器
 
-    负责处理 ChickenStack 语言的所有输入输出操作。
+    负责处理 ChickenStack 语言的输入操作（输出由 VM 负责）。
     采用策略模式，根据操作系统平台选择不同的实现方式。
 
     Attributes:
@@ -72,10 +66,8 @@ class IOHandler:
 
     Example:
         >>> io = IOHandler()
-        >>> io.print_num(42)
-        42
         >>> num = io.get_num()
-        👉 [等待输入数字] 100
+         [等待输入数字] 100
         >>> num
         100
     """
@@ -110,7 +102,7 @@ class IOHandler:
         Example:
             >>> io = IOHandler()
             >>> ch = io.get_char()
-            👉 [等待输入字符] A
+             [等待输入字符] A
             >>> ch
             b'A'
             >>> ord(ch)
@@ -121,7 +113,7 @@ class IOHandler:
             - 使用 ord() 函数可以将字节串转换为 ASCII 码
             - 在 ChickenStack 中，? 指令使用此方法读取字符
         """
-        print("👉 [等待输入字符] ", end='', flush=True)
+        print("[等待输入字符] ", end='', flush=True)
 
         if self.is_windows and msvcrt:
             # Windows 平台：使用 msvcrt 实现无缓冲输入
@@ -170,7 +162,7 @@ class IOHandler:
         Example:
             >>> io = IOHandler()
             >>> num = io.get_num()
-            👉 [等待输入数字] 123
+             [等待输入数字] 123
             >>> num
             123
 
@@ -179,7 +171,7 @@ class IOHandler:
             - 输入空或直接按回车返回 0
             - 在 ChickenStack 中，, 指令使用此方法读取数字
         """
-        print("👉 [等待输入数字] ", end='', flush=True)
+        print("[等待输入数字] ", end='', flush=True)
         num_str = ""
 
         if self.is_windows and msvcrt:
@@ -216,70 +208,6 @@ class IOHandler:
             except ValueError:
                 print("请输入有效的数字！")
                 return 0
-
-    def print_num(self, num: int) -> None:
-        """
-        打印数字
-
-        将数字打印到标准输出，数字后自动添加一个空格。
-
-        Args:
-            num (int): 要打印的数字
-
-        Returns:
-            None
-
-        Example:
-            >>> io = IOHandler()
-            >>> io.print_num(42)
-            42
-
-        Note:
-            - 使用 flush=True 确保立即输出，不等待缓冲区
-            - 在 ChickenStack 中，. 指令使用此方法打印数字
-        """
-        print(f"{num}", end=' ', flush=True)
-
-    def print_char(self, char_code: int) -> None:
-        """
-        打印字符 (ASCII)
-
-        将 ASCII 码转换为对应的字符并打印到标准输出。
-
-        Args:
-            char_code (int): ASCII 码（0-127）
-
-        Returns:
-            None
-
-        Raises:
-            TypeError: 如果 char_code 不是整数
-            ValueError: 如果 char_code 不是有效的 Unicode 码
-
-        Example:
-            >>> io = IOHandler()
-            >>> io.print_char(65)
-            A
-            >>> io.print_char(72)
-            H
-
-        Note:
-            - 使用 chr() 函数将 ASCII 码转换为字符
-            - 不添加空格，适合连续打印字符串
-            - 在 ChickenStack 中，" 指令使用此方法打印字符
-        """
-        if not isinstance(char_code, int):
-            raise TypeError(f"字符码必须是整数: {type(char_code)}")
-
-        if not 0 <= char_code <= 1114111:  # Unicode 范围
-            raise ValueError(
-                f"无效的字符码: {char_code} (有效范围: 0-1114111)"
-            )
-
-        try:
-            print(chr(char_code), end='', flush=True)
-        except ValueError as e:
-            raise ValueError(f"无法转换为字符: {char_code}") from e
 
     def print_line(self, text: str = "") -> None:
         """

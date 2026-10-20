@@ -1,6 +1,5 @@
 """
-🐔 ChickenStack 解析器模块
-====================================
+ChickenStack 解析器模块
 
 本模块负责将 ChickenStack 源代码解析为 Token 列表，并构建循环跳转表。
 是解释器的前端处理部分，负责词法分析和语法预处理。
@@ -31,7 +30,7 @@
 
 2. **操作符**: 表示各种操作
    - 数学运算: PLUS, MINUS, MULTIPLY, DIVIDE, MODULO
-   - 栈操作: DUP, SWAP, DROP
+   - 栈操作: DUP, SWAP, DROP, ROT, OVER, PICK
    - 逻辑运算: EQ, GT
    - 输入输出: PRINT_NUM, PRINT_CHAR, INPUT_NUM, INPUT_CHAR
    - 循环控制: LOOP_START, LOOP_END
@@ -108,6 +107,16 @@ class TokenType(Enum):
     DUP = "DUP"              # 复制 :
     SWAP = "SWAP"            # 交换 \
     DROP = "DROP"            # 丢弃 $
+    ROT = "ROT"              # 旋转栈顶三个 @
+    OVER = "OVER"            # 复制第二个 &
+    PICK = "PICK"            # 按深度复制 !
+    IF_START = "IF_START"      # 条件开始 {
+    ELSE = "ELSE"              # 否则 |
+    IF_END = "IF_END"          # 条件结束 }
+    NEG = "NEG"                # 取负 ~
+    STRING = "STRING"          # 字符串 '...'
+    REG_GET = "REG_GET"        # 读寄存器 a-z
+    REG_SET = "REG_SET"        # 写寄存器 A-Z
     EQ = "EQ"                # 相等 =
     GT = "GT"                # 大于 >
     PRINT_NUM = "PRINT_NUM"  # 打印数字 .
@@ -137,18 +146,7 @@ class Token:
         TokenType.DIVIDE, TokenType.MODULO
     })
     
-    _STACK_OP_TYPES = frozenset({TokenType.DUP, TokenType.SWAP, TokenType.DROP})
-    
-    _LOGIC_OP_TYPES = frozenset({TokenType.EQ, TokenType.GT})
-    
-    _IO_OP_TYPES = frozenset({
-        TokenType.PRINT_NUM, TokenType.PRINT_CHAR,
-        TokenType.INPUT_NUM, TokenType.INPUT_CHAR
-    })
-    
-    _LOOP_TYPES = frozenset({TokenType.LOOP_START, TokenType.LOOP_END})
-
-    def __init__(self, type: TokenType, value: Optional[int] = None, line: int = 0, column: int = 0) -> None:
+    def __init__(self, type: TokenType, value: Optional[object] = None, line: int = 0, column: int = 0) -> None:
         """
         初始化 Token
 
@@ -177,21 +175,6 @@ class Token:
         """判断是否为操作符 Token"""
         return self.type in self._OPERATOR_TYPES
 
-    def is_stack_op(self) -> bool:
-        """判断是否为栈操作 Token"""
-        return self.type in self._STACK_OP_TYPES
-
-    def is_logic_op(self) -> bool:
-        """判断是否为逻辑操作 Token"""
-        return self.type in self._LOGIC_OP_TYPES
-
-    def is_io_op(self) -> bool:
-        """判断是否为 I/O 操作 Token"""
-        return self.type in self._IO_OP_TYPES
-
-    def is_loop(self) -> bool:
-        """判断是否为循环控制 Token"""
-        return self.type in self._LOOP_TYPES
 
 class Parser:
     """
@@ -213,10 +196,11 @@ class Parser:
     """
 
     # 使用 __slots__ 减少内存占用
-    __slots__ = ('loops',)
+    __slots__ = ('loops', 'braces')
 
     # 最大循环嵌套深度，防止栈溢出
     MAX_LOOP_DEPTH = 100
+    MAX_BRACE_DEPTH = 100
     
     # 类级别的常量
     _WHITESPACE = frozenset({' ', '\t', '\r'})
@@ -230,6 +214,9 @@ class Parser:
         ':': TokenType.DUP,
         '\\': TokenType.SWAP,
         '$': TokenType.DROP,
+        '@': TokenType.ROT,
+        '&': TokenType.OVER,
+        '!': TokenType.PICK,
         '=': TokenType.EQ,
         '>': TokenType.GT,
         '.': TokenType.PRINT_NUM,
@@ -238,6 +225,10 @@ class Parser:
         '?': TokenType.INPUT_CHAR,
         '[': TokenType.LOOP_START,
         ']': TokenType.LOOP_END,
+        '{': TokenType.IF_START,
+        '|': TokenType.ELSE,
+        '}': TokenType.IF_END,
+        '~': TokenType.NEG,
     }
 
     def __init__(self) -> None:
@@ -247,6 +238,7 @@ class Parser:
         创建空的循环跳转表，准备进行代码解析。
         """
         self.loops: dict[int, int] = {}  # 循环跳转表，格式: {start_index: end_index, end_index: start_index}
+        self.braces: dict[int, int] = {}  # if/else 跳转表
 
     def parse(self, source_code: str) -> list[Token]:
         """
@@ -260,7 +252,7 @@ class Parser:
             source_code: 源代码字符串，包含数字和操作符
 
         Returns:
-            Token 列表，使用优化的 Token 类
+            Token 列表
 
         Raises:
             SyntaxError: 当循环符号不匹配时（如多余的 ] 或未闭合的 [）
@@ -281,72 +273,104 @@ class Parser:
             - 循环符号必须成对出现，否则会抛出 SyntaxError
             - 支持行注释：从 # 开始到行尾的所有内容都会被忽略
             - 示例: "5 3 + . # 这是一个注释" 会被解析为 [5, 3, '+', '.']
-            - 使用列表收集字符，避免字符串拼接，提升性能
+            - 逐字符扫描，空格作为分隔符
         """
-        tokens = []
-        num_str = ''  # 使用字符串直接拼接，对小数字性能更好
-        in_comment = False  # 标记是否在注释中
-        line = 1  # 当前行号
-        column = 0  # 当前列号
+        tokens: list[Token] = []
+        append = tokens.append
+        char_to_token = self._CHAR_TO_TOKEN
+        line = 1
+        line_start = 0
+        i = 0
+        n = len(source_code)
 
-        # ========================================
-        # 第一阶段：词法分析 (Tokenization)
-        # ========================================
+        while i < n:
+            ch = source_code[i]
+            column = i - line_start + 1
 
-        # 缓存方法引用到局部变量，减少属性查找开销
-        tokens_append = tokens.append
-        token_integer = Token
-        token_integer = Token
-
-        # 遍历源代码的每个字符
-        for char in source_code:
-            column += 1
-
-            # 处理换行
-            if char == '\n':
+            if ch == "\n":
                 line += 1
-                column = 0
-                if in_comment:
-                    in_comment = False
+                line_start = i + 1
+                i += 1
                 continue
 
-            # 处理注释：遇到 # 时进入注释模式，直到换行
-            if char == '#':
-                in_comment = True
-                continue  # 跳过 # 字符本身
-
-            # 如果在注释中，跳过所有字符
-            if in_comment:
+            if ch == "#":
+                j = source_code.find("\n", i)
+                if j == -1:
+                    break
+                i = j
                 continue
 
-            # 处理数字字符
-            if char.isdigit():
-                # 收集数字字符到字符串
-                num_str += char
-            else:
-                # 非数字字符，处理累积的数字
-                if num_str:
-                    value = int(num_str)
-                    start_column = column - len(num_str)
-                    tokens_append(token_integer(TokenType.INTEGER, value, line, start_column))
-                    num_str = ''  # 清空字符串
+            if ch == "'":
+                end = source_code.find("'", i + 1)
+                if end == -1:
+                    raise SyntaxError(f"字符串未闭合 (行 {line}, 列 {column})")
+                text = source_code[i + 1:end]
+                start_line = line
+                newlines = text.count("\n")
+                if newlines:
+                    line += newlines
+                    line_start = i + 1 + text.rfind("\n") + 1
+                append(Token(TokenType.STRING, text, start_line, column))
+                i = end + 1
+                continue
 
-                if char not in self._WHITESPACE:
-                    # 如果字符不是空白字符，创建对应的 Token
-                    token_type = self._CHAR_TO_TOKEN.get(char)
-                    if token_type:
-                        tokens_append(token_integer(token_type, line=line, column=column))
+            if ch.isdigit():
+                j = i
+                while j < n and source_code[j].isdigit():
+                    j += 1
+                is_float = False
+                if j + 1 < n and source_code[j] == "." and source_code[j + 1].isdigit():
+                    is_float = True
+                    j += 1
+                    while j < n and source_code[j].isdigit():
+                        j += 1
+                text = source_code[i:j]
+                value = float(text) if is_float else int(text)
+                append(Token(TokenType.INTEGER, value, line, column))
+                i = j
+                continue
 
-        # 处理源代码末尾的数字（如果有的话）
-        if num_str:
-            start_column = column - len(num_str) + 1
-            tokens.append(Token(TokenType.INTEGER, int(num_str), line, start_column))
+            if ch == "~" and i + 1 < n and source_code[i + 1].isdigit():
+                j = i + 1
+                while j < n and source_code[j].isdigit():
+                    j += 1
+                is_float = False
+                if j + 1 < n and source_code[j] == "." and source_code[j + 1].isdigit():
+                    is_float = True
+                    j += 1
+                    while j < n and source_code[j].isdigit():
+                        j += 1
+                text = source_code[i + 1:j]
+                value = float(text) if is_float else int(text)
+                append(Token(TokenType.INTEGER, -value, line, column))
+                i = j
+                continue
 
-        # ========================================
-        # 第二阶段：构建循环跳转表
-        # ========================================
+            if "a" <= ch <= "z":
+                append(Token(TokenType.REG_GET, ord(ch) - ord("a"), line, column))
+                i += 1
+                continue
 
+            if "A" <= ch <= "Z":
+                append(Token(TokenType.REG_SET, ord(ch) - ord("A"), line, column))
+                i += 1
+                continue
+
+            if ch in " \t\r":
+                i += 1
+                continue
+
+            token_type = char_to_token.get(ch)
+            if token_type is not None:
+                append(Token(token_type, None, line, column))
+            i += 1
+
+        # 第二阶段：构建循环与 if/else 跳转表
+        self.loops.clear()
+        self.braces.clear()
+        self.braces.clear()
         self._build_loop_table(tokens)
+        self._build_brace_table(tokens)
 
         return tokens
 
@@ -381,7 +405,7 @@ class Parser:
             raise TypeError(f"tokens 必须是列表: {type(tokens)}")
 
         stack = []  # 用于匹配循环符号的栈
-        loops = self.loops  # 缓存属性引用
+        loops: dict[int, int] = {}  # 先构建到局部字典，成功后再替换 self.loops
         max_loop_depth = self.MAX_LOOP_DEPTH  # 缓存常量
         loop_start = TokenType.LOOP_START  # 缓存枚举值
         loop_end = TokenType.LOOP_END  # 缓存枚举值
@@ -425,6 +449,57 @@ class Parser:
                 f"循环符号 [ 没有闭合（位置: {stack}, 行号: {unclosed_positions}）"
             )
 
+        # 全部匹配成功后才替换实例上的跳转表；异常时不会留下半成品
+        self.loops = loops
+
+    def _build_brace_table(self, tokens: list[Token]) -> None:
+        """
+        构建 if/else 跳转表
+
+        语法: { then } 或 { then | else }
+        - `{` 处条件为 0 时跳到 `|`（有 else）或 `}`（无 else）
+        - `|` 处（then 执行完）跳到 `}`
+
+        Raises:
+            SyntaxError: 当 if/else 符号不匹配时
+        """
+        if not isinstance(tokens, list):
+            raise TypeError(f"tokens 必须是列表: {type(tokens)}")
+
+        stack = []
+        braces: dict[int, int] = {}
+
+        for i, token in enumerate(tokens):
+            token_type = token.type
+            if token_type is TokenType.IF_START:
+                if len(stack) >= self.MAX_BRACE_DEPTH:
+                    raise SyntaxError(
+                        f"if 嵌套过深（行 {token.line}, 列 {token.column}），"
+                        f"最大深度为 {self.MAX_BRACE_DEPTH}"
+                    )
+                stack.append([i, None])
+            elif token_type is TokenType.ELSE:
+                if not stack:
+                    raise SyntaxError(f"多余的 | (行 {token.line}, 列 {token.column})")
+                if stack[-1][1] is not None:
+                    raise SyntaxError(
+                        f"同一层出现多个 | (行 {token.line}, 列 {token.column})"
+                    )
+                stack[-1][1] = i
+            elif token_type is TokenType.IF_END:
+                if not stack:
+                    raise SyntaxError(f"多余的 }} (行 {token.line}, 列 {token.column})")
+                start, else_idx = stack.pop()
+                braces[start] = else_idx if else_idx is not None else i
+                if else_idx is not None:
+                    braces[else_idx] = i
+                braces[i] = start
+
+        if stack:
+            raise SyntaxError(f"if 没有闭合（位置: {[frame[0] for frame in stack]}）")
+
+        self.braces = braces
+
     def get_loop_table(self) -> dict[int, int]:
         """
         获取循环跳转表
@@ -445,6 +520,10 @@ class Parser:
             - 如果代码中没有循环，返回空字典
         """
         return self.loops.copy()
+
+    def get_brace_table(self) -> dict[int, int]:
+        """返回 if/else 跳转表的副本。"""
+        return self.braces.copy()
 
     def reset(self) -> None:
         """

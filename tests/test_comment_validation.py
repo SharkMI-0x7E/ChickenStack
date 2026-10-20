@@ -55,7 +55,7 @@ def test_basic_comment():
     print(f"  期望Token: {expected}")
     print(f"  实际Token: {actual}")
     assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
-    print("  ✓ 通过\n")
+    print("通过\n")
 
 
 def test_line_start_comment():
@@ -70,7 +70,7 @@ def test_line_start_comment():
     print(f"  期望Token: {expected}")
     print(f"  实际Token: {actual}")
     assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
-    print("  ✓ 通过\n")
+    print("通过\n")
 
 
 def test_multiline_comments():
@@ -89,7 +89,7 @@ def test_multiline_comments():
     print(f"  期望Token: {expected}")
     print(f"  实际Token: {actual}")
     assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
-    print("  ✓ 通过\n")
+    print("通过\n")
 
 
 def test_comment_in_middle():
@@ -104,7 +104,7 @@ def test_comment_in_middle():
     print(f"  期望Token: {expected}")
     print(f"  实际Token: {actual}")
     assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
-    print("  ✓ 通过\n")
+    print("通过\n")
 
 
 def test_empty_comment_line():
@@ -119,7 +119,7 @@ def test_empty_comment_line():
     print(f"  期望Token: {expected}")
     print(f"  实际Token: {actual}")
     assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
-    print("  ✓ 通过\n")
+    print("通过\n")
 
 
 def test_comment_at_end_no_newline():
@@ -134,7 +134,7 @@ def test_comment_at_end_no_newline():
     print(f"  期望Token: {expected}")
     print(f"  实际Token: {actual}")
     assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
-    print("  ✓ 通过\n")
+    print("通过\n")
 
 
 def test_consecutive_comments():
@@ -152,7 +152,7 @@ def test_consecutive_comments():
     print(f"  期望Token: {expected}")
     print(f"  实际Token: {actual}")
     assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
-    print("  ✓ 通过\n")
+    print("通过\n")
 
 
 def test_comment_with_spaces():
@@ -167,7 +167,7 @@ def test_comment_with_spaces():
     print(f"  期望Token: {expected}")
     print(f"  实际Token: {actual}")
     assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
-    print("  ✓ 通过\n")
+    print("通过\n")
 
 
 def test_comment_after_newline():
@@ -182,7 +182,7 @@ def test_comment_after_newline():
     print(f"  期望Token: {expected}")
     print(f"  实际Token: {actual}")
     assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
-    print("  ✓ 通过\n")
+    print("通过\n")
 
 
 def test_complex_scenario():
@@ -205,7 +205,7 @@ def test_complex_scenario():
     print(f"  期望Token: {expected}")
     print(f"  实际Token: {actual}")
     assert actual == expected, f"测试失败: 期望 {expected}, 得到 {actual}"
-    print("  ✓ 通过\n")
+    print("通过\n")
 
 
 def test_execution_with_comments():
@@ -220,14 +220,12 @@ def test_execution_with_comments():
     print(f"  Token列表: {tokens}")
     print("  执行结果:")
     interpreter.run(source)
-    print("  ✓ 执行成功\n")
+    print("执行成功\n")
 
 
 def main():
     """运行所有测试"""
-    print("=" * 60)
     print("开始 # 注释功能验证测试")
-    print("=" * 60)
     print()
 
     tests = [
@@ -252,17 +250,15 @@ def main():
             test()
             passed += 1
         except Exception as e:
-            print(f"  ✗ 失败: {e}\n")
+            print(f"失败: {e}\n")
             failed += 1
 
-    print("=" * 60)
     print(f"测试完成: 通过 {passed}/{len(tests)}, 失败 {failed}/{len(tests)}")
-    print("=" * 60)
 
     if failed == 0:
-        print("\n✓ 所有测试通过！# 注释功能工作正常。")
+        print("\n所有测试通过，注释功能工作正常。")
     else:
-        print(f"\n✗ 有 {failed} 个测试失败。")
+        print(f"\n有 {failed} 个测试失败。")
 
 
 if __name__ == "__main__":

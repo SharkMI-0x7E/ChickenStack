@@ -1,6 +1,5 @@
 """
-🐔 ChickenStack 主入口文件
-====================================
+ChickenStack 主入口文件
 
 本文件是 ChickenStack 语言解释器的主入口，提供两种运行模式：
 1. 文件模式：从文件读取源代码并执行
@@ -68,7 +67,8 @@ ChickenStackVM.run() → 逐条执行指令
 1. **整数 (int)**: 直接推入栈
 2. **操作符 (str)**: 调用对应的 VM 方法
    - 数学运算: op_add(), op_sub(), op_mul(), op_div(), op_mod()
-   - 栈操作: op_dup(), op_swap(), op_drop()
+   - 栈操作: op_dup(), op_swap(), op_drop(), op_rot(), op_over(), op_pick()
+   - 取负: op_neg()
    - 逻辑运算: op_eq(), op_gt()
    - 输入输出: op_print_num(), op_print_char(), op_input_num(), op_input_char()
    - 循环控制: 使用 loops 跳转表实现
@@ -79,9 +79,7 @@ import os
 import time
 from typing import List, Union, Dict, Callable, Optional
 
-# ========================================
 # UTF-8 编码设置（Windows 平台）
-# ========================================
 
 # 设置 UTF-8 编码输出（解决 Windows 控制台中文显示问题）
 # Windows 默认使用 GBK 编码，会导致中文显示乱码
@@ -91,193 +89,47 @@ if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
-# ========================================
 # 路径设置
-# ========================================
 
 # 添加当前目录到路径，以便导入 chicken_stack 模块
 # 这样无论从哪个目录运行 main.py，都能正确导入模块
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from chicken_stack import ChickenStackVM, Parser, IOHandler, Token, TokenType
+from chicken_stack import (
+    ChickenStackInterpreter,
+    ChickenStackVM,
+    Parser,
+    IOHandler,
+    Token,
+    TokenType,
+)
 
 
-class ChickenStackInterpreter:
+def run_compiled(code: str, io_handler) -> None:
     """
-    ChickenStack 解释器
+    用字节码编译器执行源码。
 
-    整合 Parser、VM 和 IOHandler 三个核心组件，提供完整的代码执行功能。
-    采用依赖注入模式，将 IOHandler 注入到 VM 中。
+    把源码翻译成 Python 源码再交给 compile()，输出与解释器逐字符相同，
+    适合长时间运行的数值程序。
 
-    Attributes:
-        vm (ChickenStackVM): 虚拟机实例，负责执行指令
-        parser (Parser): 解析器实例，负责将源代码转换为 Token 列表
-        io_handler (IOHandler): 输入输出处理器，处理 I/O 操作
-        op_map (Dict[TokenType, Callable]): Token 到操作函数的映射字典
+    Args:
+        code: ChickenStack 源码
+        io_handler: 输入处理器，供 `,` 与 `?` 使用
 
     Example:
-        >>> interpreter = ChickenStackInterpreter()
-        >>> interpreter.run("10 20 + .")
-        🐔 ChickenStack 启动! (指令数: 4)
-        ----------------------------------------
-        30
-        ----------------------------------------
-        🏁 运行结束 | 最终栈状态: []
+        >>> run_compiled("5 3 + .", None)
+        8
+        编译执行完成 | 指令数: 4 | 耗时: 0.001s
     """
+    from chicken_stack import compile_source
 
-    # 使用 __slots__ 减少内存占用
-    __slots__ = ('vm', 'parser', 'io_handler', 'op_map')
-
-    def __init__(self, max_iterations: Optional[int] = None) -> None:
-        """
-        初始化 ChickenStack 解释器
-
-        创建虚拟机、解析器和 IOHandler 的实例。
-        同时初始化指令映射字典，提高执行效率。
-
-        Args:
-            max_iterations: 最大迭代次数，防止无限循环
-        """
-        self.vm = ChickenStackVM(max_iterations=max_iterations)
-        self.parser = Parser()
-        self.io_handler = IOHandler()
-
-        # Token 到操作函数的映射字典（使用 TokenType 枚举）
-        self.op_map: Dict[TokenType, Callable[[], None]] = {
-            TokenType.PLUS: self.vm.op_add,
-            TokenType.MINUS: self.vm.op_sub,
-            TokenType.MULTIPLY: self.vm.op_mul,
-            TokenType.DIVIDE: self.vm.op_div,
-            TokenType.MODULO: self.vm.op_mod,
-            TokenType.DUP: self.vm.op_dup,
-            TokenType.SWAP: self.vm.op_swap,
-            TokenType.DROP: self.vm.op_drop,
-            TokenType.EQ: self.vm.op_eq,
-            TokenType.GT: self.vm.op_gt,
-            TokenType.PRINT_NUM: self.vm.op_print_num,
-            TokenType.PRINT_CHAR: self.vm.op_print_char,
-            TokenType.INPUT_NUM: self.vm.op_input_num,
-            TokenType.INPUT_CHAR: self.vm.op_input_char,
-        }
-
-    def run(self, source_code: str) -> None:
-        """
-        运行 ChickenStack 代码
-
-        这是解释器的核心方法，执行完整的代码运行流程：
-        1. 解析源代码为 Token 列表
-        2. 构建循环跳转表
-        3. 设置 IO Handler
-        4. 逐条执行指令
-        5. 添加迭代计数和跳转验证
-
-        Args:
-            source_code: 源代码字符串
-
-        Returns:
-            None
-
-        Raises:
-            Exception: 捕获所有运行时错误并打印错误信息
-
-        Example:
-            >>> interpreter = ChickenStackInterpreter()
-            >>> interpreter.run("5 3 + .")
-            🐔 ChickenStack 启动! (指令数: 4)
-            ----------------------------------------
-            8
-            ----------------------------------------
-            🏁 运行结束 | 最终栈状态: []
-
-        Note:
-            - 错误会被捕获并打印，不会导致程序崩溃
-            - 循环跳转表由 Parser 构建并传递给 VM
-            - 添加了迭代计数器，防止无限循环
-            - 添加了跳转验证，防止索引越界
-        """
-        start_time = time.time()
-        idx = 0  # 初始化执行指针，用于错误信息显示
-        token: Optional[Token] = None  # 初始化 token，用于错误信息显示
-
-        try:
-            # ========================================
-            # 第一步：解析代码
-            # ========================================
-
-            # 将源代码字符串解析为 Token 列表
-            tokens: List[Token] = self.parser.parse(source_code)
-
-            # 获取循环跳转表并设置到 VM
-            self.vm.loops = self.parser.get_loop_table()
-
-            # 设置 IO Handler（用于输入输出操作）
-            self.vm.io_handler = self.io_handler
-
-            # 重置迭代计数器
-            self.vm.reset_iteration_count()
-
-            # ========================================
-            # 第二步：执行代码
-            # ========================================
-
-            print(f"ChickenStack 运行中... (指令数: {len(tokens)})")
-
-            limit = len(tokens)
-
-            # 主执行循环：遍历所有 Token
-            while idx < limit:
-                token = tokens[idx]
-
-                # 增加迭代计数器（防止无限循环）
-                self.vm.increment_iteration()
-
-                # ========================================
-                # 1. 如果是整数 Token，直接入栈
-                # ========================================
-                if token.is_integer():
-                    self.vm.push(token.value)
-
-                # ========================================
-                # 2-5. 使用字典映射执行操作
-                # ========================================
-                elif token.type in self.op_map:
-                    self.op_map[token.type]()
-
-                # ========================================
-                # 6. 循环控制 (Brainfuck style)
-                # ========================================
-                elif token.type == TokenType.LOOP_START:
-                    # 循环开始：检查栈顶是否为 0
-                    # 如果栈顶是 0，跳过整个循环体（跳到对应的 ]）
-                    if not self.vm.stack or self.vm.peek() == 0:
-                        target_idx = self.vm.loops[idx]
-                        # 验证跳转目标
-                        self.vm.validate_jump(target_idx, limit - 1)
-                        idx = target_idx
-                elif token.type == TokenType.LOOP_END:
-                    # 循环结束：跳回对应的 [ 位置
-                    # 减 1 是因为循环末尾会执行 idx += 1
-                    target_idx = self.vm.loops[idx] - 1
-                    # 验证跳转目标
-                    self.vm.validate_jump(target_idx, limit - 1)
-                    idx = target_idx
-
-                # 移动到下一个 Token
-                idx += 1
-
-            # ========================================
-            # 第三步：输出执行结果
-            # ========================================
-
-            elapsed = time.time() - start_time
-            print(f"\n运行结束 | 栈: {self.vm.get_stack_state()} | 耗时: {elapsed:.3f}s | 迭代: {self.vm.iteration_count}")
-
-        except Exception as e:
-            elapsed = time.time() - start_time
-            print(f"\n运行错误: {e}")
-            if token:
-                print(f"位置: Token #{idx} ({token}) - 行 {token.line}, 列 {token.column}")
-            print(f"栈: {self.vm.get_stack_state()} | 迭代: {self.vm.iteration_count} | 耗时: {elapsed:.3f}s")
+    program = compile_source(code)
+    started = time.time()
+    text = program.run(io_handler)
+    if text:
+        print(text, end='')
+    elapsed = time.time() - started
+    print(f"\n编译执行完成 | 指令数: {program.token_count} | 耗时: {elapsed:.3f}s")
 
 
 def main() -> None:
@@ -299,34 +151,49 @@ def main() -> None:
         $ python main.py
     """
     # 创建解释器实例
-    interpreter = ChickenStackInterpreter()
+    args = sys.argv[1:]
+    trace = "--trace" in args
+    if trace:
+        args.remove("--trace")
+    use_compiler = "--compile" in args
+    if use_compiler:
+        args.remove("--compile")
 
-    if len(sys.argv) > 1:
-        # ========================================
+    max_iterations = None
+    if "--max-iter" in args:
+        index = args.index("--max-iter")
+        try:
+            max_iterations = int(args[index + 1])
+        except (IndexError, ValueError):
+            print("--max-iter 后面要跟一个整数，例如 --max-iter 5000000")
+            return
+        del args[index:index + 2]
+
+    interpreter = ChickenStackInterpreter(max_iterations=max_iterations)
+
+    if args:
         # 文件模式：运行指定的源代码文件
-        # ========================================
 
-        file_path = sys.argv[1]
+        file_path = args[0]
         try:
             # 读取文件内容
             with open(file_path, 'r', encoding='utf-8') as f:
                 code = f.read()
             # 执行代码
-            interpreter.run(code)
+            if use_compiler:
+                run_compiled(code, interpreter.io_handler)
+            else:
+                interpreter.run(code, trace=trace)
         except FileNotFoundError:
             print(f"文件不存在: {file_path}")
         except Exception as e:
             print(f"读取文件错误: {e}")
     else:
-        # ========================================
         # 演示模式：运行内置示例
-        # ========================================
 
         print("ChickenStack 演示模式")
 
-        # ========================================
         # 演示1：计算 (10 + 20) * 2
-        # ========================================
 
         print("\n演示1: 计算 (10 + 20) * 2")
         demo1 = "10 20 + 2 * ."
@@ -340,9 +207,7 @@ def main() -> None:
         # 6. . 打印栈顶 -> 输出: 60
         interpreter.run(demo1)
 
-        # ========================================
         # 演示2：打印 HELLO (ASCII: 72 69 76 76 79)
-        # ========================================
 
         print("\n演示2: 打印 HELLO")
         # 这里的逻辑是：把数字推入，然后用 " 打印成字符
@@ -364,9 +229,7 @@ def main() -> None:
         # 12. " 打印字符 -> 输出: 换行
         interpreter.run(demo2)
 
-        # ========================================
         # 演示3：循环计数 (从 5 数到 1)
-        # ========================================
 
         print("\n演示3: 循环倒数 (5 4 3 2 1)")
         # 逻辑：推入5 -> 进入循环 -> 复制一份打印 -> 减1 -> 循环判断

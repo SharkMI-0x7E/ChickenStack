@@ -51,9 +51,7 @@ def run_game(inputs, label):
     print(f"\n  栈: {vm.get_stack_state()} | 迭代: {vm.iteration_count}")
     return vm
 
-print("-" * 50)
 print("测试1: 一次就猜对 (输入 42)")
-print("-" * 50)
 run_game([42], "test1")
 
 print("\n测试2: 猜太小 -> 猜对 (输入 20, 42)")
@@ -65,6 +63,4 @@ run_game([80, 42], "test3")
 print("\n测试4: 多轮猜测 (10 -> 60 -> 30 -> 50 -> 42)")
 run_game([10, 60, 30, 50, 42], "test4")
 
-print("\n" + "-" * 50)
 print("全部测试完成!")
-print("-" * 50)
